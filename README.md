@@ -120,6 +120,12 @@ docker run -d --name vectoraidb -p 50051:50051 \
 docker compose --profile full up --build
 ```
 
+**Landing-page deployment** (static marketing site, for the public submission link):
+
+- GitHub Pages deployment is wired in via `.github/workflows/deploy-landing-pages.yml`
+- the custom domain file lives at `landing/CNAME`
+- the share/cover asset lives at `landing/cover.svg`
+
 ### 2. Install backend
 
 ```bash
@@ -217,6 +223,16 @@ pytest tests -q
 ```
 
 All pipelines unit-tested with fake embedders / mock search results (no network, no models needed for CI).
+
+## Submission Readiness
+
+Before final DoraHacks submission, run:
+
+```bash
+python scripts/check_submission_readiness.py
+```
+
+It fails if the repo still contains placeholder demo/team/cover fields or if the landing page is still using the fallback demo block instead of a real embed.
 
 ---
 
