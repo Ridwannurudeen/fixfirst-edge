@@ -122,9 +122,9 @@ docker compose --profile full up --build
 
 **Landing-page deployment** (static marketing site, for the public submission link):
 
-- GitHub Pages deployment is wired in via `.github/workflows/deploy-landing-pages.yml`
-- the custom domain file lives at `landing/CNAME`
-- the share/cover asset lives at `landing/cover.svg`
+- The canonical landing page is hosted at [edge.gudman.xyz](https://edge.gudman.xyz) on a VPS with Let's Encrypt.
+- `.github/workflows/deploy-landing-pages.yml` publishes a mirror to `https://Ridwannurudeen.github.io/fixfirst-edge/` as a backup (no custom domain — DNS for `edge.gudman.xyz` stays on the VPS).
+- The share/cover asset lives at `landing/cover.svg`.
 
 ### 2. Install backend
 
