@@ -59,7 +59,7 @@
 **Visual**: drag a photo of a damaged part into the upload zone.
 
 **VO**:
-> "Drop a photo. CLIP embeds it client-side. The result is a 512-dimensional vector searched against every image vector in the same collection — named vectors means one database, three embedding spaces."
+> "Drop a photo. CLIP embeds it locally on the same machine. The result is a 512-dimensional vector searched against every image vector in the same collection — named vectors means one database, three embedding spaces."
 
 **Visual highlight**: top-matching incident appears.
 

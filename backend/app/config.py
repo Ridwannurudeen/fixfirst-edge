@@ -9,6 +9,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _csv_list(name: str, default: tuple[str, ...]) -> tuple[str, ...]:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    values = tuple(item.strip() for item in raw.split(",") if item.strip())
+    return values or default
+
+
 @dataclass(frozen=True)
 class Settings:
     project_root: Path = Path(__file__).resolve().parents[2]
@@ -20,6 +28,13 @@ class Settings:
     actian_port: int = int(os.getenv("ACTIAN_PORT", "50051"))
     actian_api_key: str = os.getenv("ACTIAN_API_KEY", "")
     backend_port: int = int(os.getenv("BACKEND_PORT", "8000"))
+    cors_origins: tuple[str, ...] = _csv_list(
+        "CORS_ORIGINS",
+        (
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ),
+    )
     collection_name: str = "incidents"
 
     @property

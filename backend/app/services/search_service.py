@@ -30,7 +30,9 @@ async def search_voice(file: UploadFile, filters: SearchFilters | None) -> tuple
     try:
         transcript = transcribe(str(temp_path))
         query_vec = embed_text(transcript)
-        results = db.search_hybrid(transcript, query_vec, _filters(filters), k=10)
+        voice_hits = db.search_audio(query_vec, _filters(filters), k=10)
+        text_hits = db.search_hybrid(transcript, query_vec, _filters(filters), k=10)
+        results = _rrf_merge([voice_hits, text_hits])
         return transcript, results
     finally:
         temp_path.unlink(missing_ok=True)
