@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en" class="bg-zinc-950 text-zinc-100">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FixFirst Edge — Offline multimodal maintenance copilot</title>
+    <meta
+      name="description"
+      content="Photo, error code, voice note, or past incident — in one second — on a laptop with no internet. Built on Actian VectorAI DB with named vectors, filtered search, and hybrid RRF fusion."
+    />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:title" content="FixFirst Edge — Find the fix before the line stops" />
+    <meta
+      property="og:description"
+      content="Offline multimodal maintenance copilot. Photo, error code, voice note, manual snippet — one query, local retrieval, auditable answers."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://edge.gudman.xyz" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <style>
+      :root {
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+      .bg-grid {
+        background-image:
+          radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+        background-size: 28px 28px;
+      }
+      .glow { box-shadow: 0 0 80px -20px rgba(16, 185, 129, 0.4); }
+    </style>
+  </head>
+  <body class="antialiased">
+    <nav class="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <a href="#" class="flex items-center gap-2 text-sm font-semibold tracking-tight">
+          <span class="inline-block h-2 w-2 rounded-full bg-emerald-400"></span>
+          FixFirst Edge
+        </a>
+        <div class="flex items-center gap-6 text-sm text-zinc-400">
+          <a href="#why-actian" class="hover:text-white">Why Actian</a>
+          <a href="#architecture" class="hover:text-white">Architecture</a>
+          <a href="#quickstart" class="hover:text-white">Quickstart</a>
+          <a
+            href="https://github.com/"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 px-3 py-1.5 font-medium text-white transition hover:border-zinc-700"
+            >GitHub →</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="bg-grid">
+      <div class="mx-auto max-w-6xl px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+        <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400"></span>
+          OFFLINE — running locally
+        </div>
+        <h1 class="text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
+          Find the fix
+          <span class="text-emerald-400">before</span>
+          the line stops.
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg text-zinc-400 md:text-xl">
+          FixFirst Edge turns your manuals, parts catalog, and incident history into a multimodal search that runs on the technician's laptop. Photo, error code, voice note — one query, local retrieval, auditable answers. No cloud. No LLM hallucinations. No waiting for signal.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="#quickstart"
+            class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
+          >
+            Run it locally
+            <span aria-hidden="true">→</span>
+          </a>
+          <a
+            href="#demo"
+            class="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-5 py-3 text-sm font-medium text-white transition hover:border-zinc-700"
+          >
+            Watch 2-min demo
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAT BAND -->
+    <section class="border-y border-zinc-900 bg-zinc-950/60">
+      <div class="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-zinc-900 md:grid-cols-3 md:divide-x md:divide-y-0">
+        <div class="px-6 py-10 md:px-10">
+          <div class="text-4xl font-semibold tracking-tight md:text-5xl">3 in 1</div>
+          <div class="mt-2 text-sm uppercase tracking-[0.2em] text-zinc-500">
+            Named vectors per document
+          </div>
+          <div class="mt-3 text-sm text-zinc-400">
+            Text (384d), image (512d), and audio-transcript vectors — one Actian collection, no cross-store joins.
+          </div>
+        </div>
+        <div class="px-6 py-10 md:px-10">
+          <div class="text-4xl font-semibold tracking-tight md:text-5xl">0</div>
+          <div class="mt-2 text-sm uppercase tracking-[0.2em] text-zinc-500">
+            Cloud API calls
+          </div>
+          <div class="mt-3 text-sm text-zinc-400">
+            All embedding, transcription, retrieval and diagnosis runs on CPU on the same machine the technician is using.
+          </div>
+        </div>
+        <div class="px-6 py-10 md:px-10">
+          <div class="text-4xl font-semibold tracking-tight md:text-5xl">~1s</div>
+          <div class="mt-2 text-sm uppercase tracking-[0.2em] text-zinc-500">
+            Warm-query latency
+          </div>
+          <div class="mt-3 text-sm text-zinc-400">
+            Hybrid RRF over dense ANN + BM25 against Actian VectorAI DB, on a laptop with no GPU.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="mx-auto max-w-6xl px-6 py-20">
+      <div class="grid gap-10 md:grid-cols-[1fr_1.2fr]">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            The problem
+          </div>
+          <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+            Unplanned downtime costs ~$50B a year.
+            <span class="text-zinc-500">The fix is usually in a 400-page PDF.</span>
+          </h2>
+        </div>
+        <div class="space-y-6 text-zinc-400">
+          <p>
+            A technician standing next to a broken conveyor typically has four things to search — the manual, the incident log, the parts catalog, and their own memory. On a plant floor with weak WiFi, none of that is fast. Cloud-based AI assistants fail the second the signal drops and hallucinate answers that can't be traced back to a specific page.
+          </p>
+          <p>
+            FixFirst Edge flips it. One search bar. One local database. Every answer points to a specific manual page, a specific prior incident, and a specific part number. Auditable by design.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENARIOS -->
+    <section class="border-y border-zinc-900 bg-zinc-950/60 py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          What the tech does
+        </div>
+        <h2 class="mt-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
+          Four ways to describe a broken machine. One retrieval pipeline.
+        </h2>
+        <div class="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+            <div class="mb-3 text-emerald-400">01 · type</div>
+            <div class="text-lg font-semibold">Error code</div>
+            <p class="mt-2 text-sm text-zinc-400">
+              "E04 motor overload." Rare tokens like codes get caught by the BM25 side of the hybrid fusion.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+            <div class="mb-3 text-emerald-400">02 · drop</div>
+            <div class="text-lg font-semibold">Photo of a damaged part</div>
+            <p class="mt-2 text-sm text-zinc-400">
+              CLIP embeds the image client-side. Searched against every image vector in the same collection.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+            <div class="mb-3 text-emerald-400">03 · speak</div>
+            <div class="text-lg font-semibold">Voice note</div>
+            <p class="mt-2 text-sm text-zinc-400">
+              faster-whisper transcribes locally. The transcript is re-embedded and matched against prior incident text.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+            <div class="mb-3 text-emerald-400">04 · filter</div>
+            <div class="text-lg font-semibold">Narrow by machine</div>
+            <p class="mt-2 text-sm text-zinc-400">
+              Any query can be filtered by machine type, model, fault code, or severity — keyword-indexed on Actian's side.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY ACTIAN -->
+    <section id="why-actian" class="mx-auto max-w-6xl px-6 py-24">
+      <div class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
+        Why Actian VectorAI DB
+      </div>
+      <h2 class="mt-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
+        Three features. One collection. A real multimodal retrieval stack.
+      </h2>
+      <p class="mt-4 max-w-2xl text-zinc-400">
+        FixFirst Edge is built on features that don't show up in ordinary vector stores. Each one earns its place in the request path.
+      </p>
+
+      <div class="mt-12 grid gap-4 md:grid-cols-3">
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+          <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Feature 1
+          </div>
+          <div class="text-xl font-semibold">Named vectors</div>
+          <p class="mt-3 text-sm text-zinc-400">
+            One collection holds three embedding spaces: <code class="text-zinc-200">text_vec</code> (384d, bge-small), <code class="text-zinc-200">image_vec</code> (512d, CLIP-ViT-B-32), <code class="text-zinc-200">audio_text_vec</code> (384d). A single document can carry any subset and be retrievable through any modality.
+          </p>
+          <div class="mt-4 rounded-lg bg-zinc-900 p-3 text-xs text-zinc-400">
+            <code class="mono">
+              vectors_config={<br />&nbsp;&nbsp;"text_vec": VectorParams(size=384, …),<br />&nbsp;&nbsp;"image_vec": VectorParams(size=512, …),<br />&nbsp;&nbsp;"audio_text_vec": VectorParams(size=384, …),<br />}
+            </code>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+          <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Feature 2
+          </div>
+          <div class="text-xl font-semibold">Filtered search</div>
+          <p class="mt-3 text-sm text-zinc-400">
+            Six metadata fields are keyword-indexed: <code class="text-zinc-200">doc_type</code>, <code class="text-zinc-200">machine_type</code>, <code class="text-zinc-200">model_no</code>, <code class="text-zinc-200">fault_code</code>, <code class="text-zinc-200">severity</code>, <code class="text-zinc-200">part_no</code>. Filters are applied in-engine, not after the fact.
+          </p>
+          <div class="mt-4 rounded-lg bg-zinc-900 p-3 text-xs text-zinc-400">
+            <code class="mono">
+              builder = FilterBuilder()<br />builder.must(Field("doc_type").eq("manual"))<br />builder.must(Field("model_no").eq("CX-200"))
+            </code>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+          <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            Feature 3
+          </div>
+          <div class="text-xl font-semibold">Hybrid fusion (RRF)</div>
+          <p class="mt-3 text-sm text-zinc-400">
+            Text queries run dense ANN <em>and</em> BM25 in parallel, then merge with reciprocal rank fusion. Codes like "E04" score high in BM25; phrases like "motor tripped on overload" score high in the dense branch. RRF covers both.
+          </p>
+          <div class="mt-4 rounded-lg bg-zinc-900 p-3 text-xs text-zinc-400">
+            <code class="mono">
+              score = Σ 1 / (60 + rank)
+            </code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO VIDEO -->
+    <section id="demo" class="border-y border-zinc-900 bg-zinc-950/60 py-20">
+      <div class="mx-auto max-w-5xl px-6">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          Demo
+        </div>
+        <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+          Laptop in airplane mode. One search bar. Every modality.
+        </h2>
+        <div class="mt-8 aspect-video w-full overflow-hidden rounded-2xl border border-zinc-800 bg-black glow">
+          <div class="flex h-full items-center justify-center text-center text-zinc-500">
+            <div>
+              <div class="text-sm uppercase tracking-[0.2em]">Video embed</div>
+              <div class="mt-2 max-w-md text-zinc-400">
+                Replace with YouTube unlisted iframe once recorded. See
+                <code class="mono text-zinc-300">DEMO.md</code> for the shot-by-shot script.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture" class="mx-auto max-w-6xl px-6 py-24">
+      <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+        Architecture
+      </div>
+      <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+        Everything local. No round-trips.
+      </h2>
+
+      <pre class="mono mt-10 overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-xs leading-relaxed text-zinc-400">
+┌─────────────────────────┐       ┌─────────────────────────────────┐
+│  Next.js 14 (frontend)  │  HTTP │  FastAPI (backend)              │
+│  UploadZone, SearchBar, │ ─────►│  /api/ingest/*                  │
+│  FilterPanel,           │       │  /api/search/*                  │
+│  DiagnosePanel,         │       │  /api/diagnose                  │
+│  OfflineBanner          │       │  /api/incident/save             │
+└─────────────────────────┘       └──────────────┬──────────────────┘
+                                                 │
+             ┌───────────────────────────────────┼──────────────────────────────────┐
+             ▼                                   ▼                                  ▼
+   ┌─────────────────────┐         ┌─────────────────────────┐      ┌─────────────────────┐
+   │  pipelines/         │         │  services/              │      │  db.py              │
+   │  text_embedder      │         │  ingest_service         │      │  init_collection    │
+   │  image_embedder     │         │  search_service         │      │  upsert             │
+   │  audio_transcriber  │         │  diagnose_service       │      │  search_text /      │
+   │  pdf_chunker        │         │                         │      │  image / audio /    │
+   │  csv_loader         │         │                         │      │  hybrid (RRF)       │
+   └──────────┬──────────┘         └────────────┬────────────┘      └──────────┬──────────┘
+              │                                 │                              │
+              ▼                                 ▼                              ▼
+   bge-small, CLIP-ViT-B-32,        builds metadata,             gRPC → Actian VectorAI DB
+   whisper tiny.en (CPU)            calls embedders + db         :50051, collection: incidents
+      </pre>
+    </section>
+
+    <!-- QUICKSTART -->
+    <section id="quickstart" class="border-t border-zinc-900 bg-zinc-950/60 py-24">
+      <div class="mx-auto max-w-4xl px-6">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          Quickstart
+        </div>
+        <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+          Running in five commands.
+        </h2>
+
+        <div class="mt-8 space-y-4">
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">1 · start the DB</div>
+            <pre class="mono overflow-x-auto text-sm text-zinc-200">docker run -d --name vectoraidb -p 50051:50051 \
+  --restart unless-stopped williamimoh/actian-vectorai-db:latest</pre>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">2 · install backend</div>
+            <pre class="mono overflow-x-auto text-sm text-zinc-200">cd backend &amp;&amp; python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+pip install /path/to/actian_vectorai-0.1.0b2-py3-none-any.whl</pre>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">3 · seed</div>
+            <pre class="mono overflow-x-auto text-sm text-zinc-200">cp data/fixtures/*.csv data/raw/
+# drop your own PDFs into data/raw/manuals/, images into data/raw/images/</pre>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">4 · ingest + serve</div>
+            <pre class="mono overflow-x-auto text-sm text-zinc-200">uvicorn app.main:app --host 127.0.0.1 --port 8000 &amp;
+PYTHONPATH=. python scripts/bulk_ingest.py</pre>
+          </div>
+          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">5 · frontend</div>
+            <pre class="mono overflow-x-auto text-sm text-zinc-200">cd frontend &amp;&amp; npm install &amp;&amp; npm run dev
+# open http://localhost:3000</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-10">
+        <div class="flex flex-col gap-6 text-sm text-zinc-500 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div class="font-semibold text-white">FixFirst Edge</div>
+            <div class="mt-1">
+              Built for the Actian VectorAI DB Build Challenge · MIT-licensed
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-4">
+            <a href="https://github.com/" class="transition hover:text-white">GitHub</a>
+            <a href="#quickstart" class="transition hover:text-white">Quickstart</a>
+            <a href="#why-actian" class="transition hover:text-white">Why Actian</a>
+            <a href="#demo" class="transition hover:text-white">Demo</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

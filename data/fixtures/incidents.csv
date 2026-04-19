@@ -1,0 +1,31 @@
+id,machine_type,model_no,fault_code,severity,symptom,fix_applied,downtime_min,parts_used
+inc-001,Conveyor,CX-200,E04,high,Motor tripped on overload after 3 hours of continuous run,Replaced thermal overload relay and re-torqued motor mounts,45,OL-E04-R
+inc-002,Compressor,AX-75,P21,medium,Intermittent pressure drop below 6 bar and audible knock,Cleaned intake filter and replaced worn pressure regulator,30,PR-75-A
+inc-003,Pump,VP-40,L11,critical,Seal leak with fluid pooling under housing,Replaced mechanical seal assembly and shaft sleeve,120,SL-VP40-M
+inc-004,Conveyor,CX-200,E04,medium,Belt slipping under load with temperature spike on drive motor,Re-tensioned belt and cleaned drum of debris,25,BR-200-T
+inc-005,Compressor,AX-75,T33,high,Oil temperature alarm triggered at 95C during peak load,Flushed oil circuit and replaced cooler fan assembly,60,CF-75-B
+inc-006,Pump,VP-40,V07,medium,Vibration levels exceeding 7 mm/s RMS on bearing housing,Rebalanced impeller and replaced worn bearing set,90,BG-VP40-X
+inc-007,Conveyor,CX-300,E08,high,Gearbox oil leak from output seal causing slow drive response,Replaced output shaft seal and refilled gearbox with ISO VG 220 oil,75,GS-300-O
+inc-008,Compressor,AX-100,P24,critical,Unloader valve stuck closed causing repeated safety trips,Replaced unloader valve solenoid and tested cutoff pressures,95,UV-100-S
+inc-009,Pump,VP-60,L14,high,Cavitation noise with discharge pressure fluctuating,Cleared suction line blockage and replaced foot valve,50,FV-60-D
+inc-010,Conveyor,CX-200,E11,low,Photo eye sensor intermittently failing to detect products,Cleaned sensor lens and realigned emitter-receiver pair,15,
+inc-011,Compressor,AX-75,P21,high,Pressure switch chattering with rapid cycling on and off,Replaced pressure switch and verified differential setpoint,40,PS-75-C
+inc-012,Pump,VP-40,E22,medium,Motor drawing 12A vs nameplate 9A under no-load,Cleaned rotor windings and replaced starter contactor,65,SC-VP40-L
+inc-013,Conveyor,CX-300,E04,critical,Drive motor winding failure with burnt smell,Swapped drive motor to spare unit and scheduled rewind on original,180,DM-300-W
+inc-014,Compressor,AX-100,T33,medium,Cooler fan running but oil still reaching 88C at 75% duty,Cleared debris from cooler fins and verified fan RPM with strobe,35,
+inc-015,Pump,VP-60,L11,critical,Major seal failure with product contamination,Full seal replacement and cleaned casing contamination,240,SL-VP60-M
+inc-016,Conveyor,CX-200,E15,low,End-of-line inductive sensor dropping targets during fast runs,Adjusted sensor sensitivity and replaced mounting bracket,20,IS-200-E
+inc-017,Compressor,AX-75,P28,high,Air receiver tank drain auto-valve failed closed causing water carryover,Replaced auto-drain valve and installed upstream water separator,55,DV-75-A
+inc-018,Pump,VP-40,V07,low,Slight coupling misalignment detected during 6-month inspection,Laser-aligned coupling and re-torqued coupling bolts to 45 Nm,30,
+inc-019,Conveyor,CX-300,E08,medium,Hydraulic pressure on tensioner dropping overnight,Replaced tensioner cylinder seal kit and bled air from circuit,70,TS-300-K
+inc-020,Compressor,AX-100,P21,low,Safety relief weeping at 8.1 bar instead of set 8.5 bar,Replaced safety relief valve and verified set pressure on calibrated bench,40,SR-100-V
+inc-021,Conveyor,CX-200,E04,high,Drive motor bearing noise with 5 degree rise above ambient on housing,Replaced drive-side bearing and flushed grease circuit,85,BG-200-D
+inc-022,Pump,VP-40,L11,high,Slow seal weep at flush port detected during weekly inspection,Replaced seal flush fittings and re-torqued gland bolts,60,SL-VP40-M
+inc-023,Compressor,AX-100,T33,critical,Oil temperature reached 102C triggering emergency shutdown,Replaced oil cooler core and topped up to ISO VG 46,140,OC-100-C
+inc-024,Conveyor,CX-300,E05,medium,Belt speed sensor reporting 8% slip under full product load,Replaced speed pickup and recalibrated drum encoder,50,SP-300-E
+inc-025,Pump,VP-60,V07,high,Impeller rub on casing wear ring after hydraulic shock event,Replaced wear ring and balanced impeller assembly,110,WR-60-I
+inc-026,Conveyor,CX-200,E08,low,Gearbox breather clogged causing slight pressure build,Replaced breather cap and topped up gearbox oil,20,GB-200-B
+inc-027,Compressor,AX-75,P24,medium,Unloader valve slow to cycle on startup in cold environment,Replaced unloader solenoid coil and added heat trace,45,UV-75-S
+inc-028,Pump,VP-40,L14,medium,Discharge pressure oscillation at 2 Hz after suction strainer service,Re-primed pump and verified NPSH margin above 1.5 m,40,
+inc-029,Conveyor,CX-300,E15,low,Position sensor miss during fastest index cycle only,Replaced sensor with higher switching frequency model,25,IS-300-F
+inc-030,Compressor,AX-100,P28,high,Auto drain valve stuck open wasting 12% of compressed air,Replaced drain valve timer and actuator seals,65,DV-100-T

@@ -1,0 +1,26 @@
+part_no,name,machine_type,model_no
+OL-E04-R,Thermal Overload Relay,Conveyor,CX-200
+PR-75-A,Pressure Regulator,Compressor,AX-75
+SL-VP40-M,Mechanical Seal Assembly,Pump,VP-40
+CF-75-B,Cooler Fan Assembly,Compressor,AX-75
+BR-200-T,Belt Tensioner,Conveyor,CX-200
+BG-VP40-X,Bearing Set,Pump,VP-40
+GS-300-O,Gearbox Output Seal,Conveyor,CX-300
+UV-100-S,Unloader Valve Solenoid,Compressor,AX-100
+FV-60-D,Discharge Foot Valve,Pump,VP-60
+PS-75-C,Pressure Switch,Compressor,AX-75
+SC-VP40-L,Starter Contactor,Pump,VP-40
+DM-300-W,Drive Motor,Conveyor,CX-300
+IS-200-E,Inductive Sensor,Conveyor,CX-200
+DV-75-A,Auto Drain Valve,Compressor,AX-75
+TS-300-K,Tensioner Cylinder Seal Kit,Conveyor,CX-300
+SR-100-V,Safety Relief Valve,Compressor,AX-100
+SL-VP60-M,Mechanical Seal Assembly,Pump,VP-60
+BG-200-D,Drive-Side Bearing,Conveyor,CX-200
+OC-100-C,Oil Cooler Core,Compressor,AX-100
+SP-300-E,Belt Speed Encoder,Conveyor,CX-300
+WR-60-I,Impeller Wear Ring,Pump,VP-60
+GB-200-B,Gearbox Breather Cap,Conveyor,CX-200
+UV-75-S,Unloader Solenoid Coil,Compressor,AX-75
+IS-300-F,High-Frequency Inductive Sensor,Conveyor,CX-300
+DV-100-T,Drain Valve Timer,Compressor,AX-100

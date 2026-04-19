@@ -1,0 +1,14 @@
+fault_code,machine_type,description
+E04,Conveyor,Motor overload - thermal relay tripped due to sustained over-current on drive motor
+E05,Conveyor,Belt slip detected - drive drum RPM diverges from belt speed sensor
+E08,Conveyor,Gearbox alarm - output shaft torque reading exceeds configured envelope
+E11,Conveyor,Photo eye lost - sensor fails to detect expected product passage
+E15,Conveyor,Position sensor dropout - inductive target miss during fast index
+P21,Compressor,Pressure regulation fault - downstream pressure falls below setpoint
+P24,Compressor,Unloader valve fault - solenoid did not actuate within commanded window
+P28,Compressor,Air receiver drain fault - auto drain valve failed to cycle at interval
+T33,Compressor,Oil temperature alarm - lubrication circuit exceeded 90C threshold
+L11,Pump,Seal integrity fault - shaft seal leak detected via moisture sensor
+L14,Pump,Cavitation detected - discharge pressure oscillation above configured threshold
+V07,Pump,Vibration alarm - bearing housing RMS exceeds 7 mm/s
+E22,Pump,Motor current anomaly - running current deviates >20% from nameplate under steady load
