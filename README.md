@@ -114,6 +114,12 @@ docker run -d --name vectoraidb -p 50051:50051 \
   --restart unless-stopped williamimoh/actian-vectorai-db:latest
 ```
 
+**One-command full stack** (Actian + backend + frontend, for a judge or reviewer reproducing the app without HMR):
+
+```bash
+docker compose --profile full up --build
+```
+
 ### 2. Install backend
 
 ```bash
@@ -177,25 +183,27 @@ cd backend
 python scripts/verify_offline.py
 ```
 
-Disconnect WiFi — the app keeps working. The **OFFLINE — Running locally** banner stays green.
+Disconnect WiFi — the app keeps working. The **OFFLINE — Ready locally** banner stays green whenever Actian is reachable and the `incidents` collection is initialized; it switches to **OFFLINE — Local DB not initialized** if the collection is missing, so the banner reflects real system state, not just a hard-coded label.
 
 ---
 
 ## API
 
+The Next.js UI is built around a single unified entry point — `POST /api/diagnose` — that fuses text, image, and voice in one request and returns evidence + templated recommendation. The `/api/search/*` endpoints are the lower-level developer API surface, exposing each modality and filter independently for programmatic use.
+
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/api/health` | `{status, online, db}` |
+| GET | `/api/health` | `{status, online, db, collection_ready}` |
 | POST | `/api/ingest/manual` | multipart: PDF + machine_type + model_no |
 | POST | `/api/ingest/incident` | JSON row → auto-detects incident vs. error_code |
 | POST | `/api/ingest/image` | multipart: image + machine_type + optional fault_code/severity |
 | POST | `/api/ingest/voice` | multipart: WAV + machine_type |
 | POST | `/api/ingest/part` | JSON row |
-| POST | `/api/search/text` | JSON: `{query, filters?}` → RRF hybrid |
-| POST | `/api/search/image` | multipart: image + filters |
-| POST | `/api/search/voice` | multipart: WAV + filters |
-| POST | `/api/search/multimodal` | multipart: text + image + audio + filters |
-| POST | `/api/diagnose` | multipart: query + image + voice + filters → templated answer |
+| POST | `/api/search/text` | JSON: `{query, filters?}` → RRF hybrid (dense ANN + app-side BM25) |
+| POST | `/api/search/image` | multipart: image + filters → `image_vec` ANN |
+| POST | `/api/search/voice` | multipart: WAV + filters → `audio_text_vec` ANN fused with transcript hybrid |
+| POST | `/api/search/multimodal` | multipart: text + image + audio + filters → RRF across modalities |
+| POST | `/api/diagnose` | multipart: query + image + voice + filters → **primary UI entry point**, templated evidence answer |
 | POST | `/api/incident/save` | JSON row → live-indexed |
 
 ---

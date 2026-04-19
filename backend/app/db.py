@@ -118,6 +118,16 @@ def health() -> bool:
         return False
 
 
+def collection_ready() -> bool:
+    if _IMPORT_ERROR is not None:
+        return False
+    try:
+        with _client() as client:
+            return bool(client.collections.exists(settings.collection_name))
+    except Exception:
+        return False
+
+
 def _client() -> Any:
     _require_client()
     api_key = settings.actian_api_key or None

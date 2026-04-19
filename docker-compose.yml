@@ -20,6 +20,7 @@ services:
       ACTIAN_API_KEY: ${ACTIAN_API_KEY:-}
       MODEL_CACHE_DIR: ${MODEL_CACHE_DIR:-/workspace/data/processed/models}
       BACKEND_PORT: ${BACKEND_PORT:-8000}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
     volumes:
       - ./backend:/app
       - ./data:/workspace/data
@@ -27,3 +28,14 @@ services:
       - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       - actian
+
+  frontend:
+    profiles: ["full"]
+    build:
+      context: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

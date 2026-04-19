@@ -24,6 +24,7 @@ class HealthResponse(BaseModel):
     status: Literal["ok"]
     online: Literal[False]
     db: bool
+    collection_ready: bool
 
 
 class IngestRowRequest(BaseModel):

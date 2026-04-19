@@ -2,6 +2,7 @@ export type HealthResponse = {
   status: "ok";
   online: false;
   db: string | boolean;
+  collection_ready: boolean;
 };
 
 export type DiagnoseResponse = {
