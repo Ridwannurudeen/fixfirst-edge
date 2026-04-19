@@ -30,7 +30,7 @@ Every query can be narrowed by `doc_type`, `machine_type`, `model_no`, `fault_co
 
 Text search uses **reciprocal rank fusion** over:
 - `text_vec` dense ANN (top-50)
-- BM25-style keyword scoring over `text_content` payload (top-50)
+- app-side BM25-style keyword scoring over filtered `text_content` payload (top-50)
 
 Merged with RRF (k=60), top-k returned. This matters for maintenance: the error code "E04" is a rare token dense models struggle with, while symptom phrases like "motor tripped on overload" are perfectly dense-retrievable. Hybrid covers both. See [`backend/app/db.py:search_hybrid`](backend/app/db.py).
 
@@ -97,7 +97,7 @@ Every line traceable to a row in Actian. No hallucination surface.
 ### Prerequisites
 
 - Docker
-- Python 3.11 or 3.12 (tested on both)
+- Python 3.11 or 3.12
 - Node 20+
 - ~2 GB disk for model weights on first run
 
@@ -120,8 +120,9 @@ docker run -d --name vectoraidb -p 50051:50051 \
 cd backend
 python -m venv .venv && source .venv/bin/activate   # or .venv\Scripts\activate on Windows
 pip install -r requirements.txt
-pip install /path/to/actian_vectorai-0.1.0b2-py3-none-any.whl
 ```
+
+`requirements.txt` already includes `actian-vectorai==0.1.0b2`, so no extra wheel install step is required.
 
 ### 3. Seed data
 
@@ -167,6 +168,8 @@ npm run dev
 
 Open http://localhost:3000.
 
+The backend allows local browser requests from `http://localhost:3000` and `http://127.0.0.1:3000` by default. Override with `CORS_ORIGINS` if you need a different frontend origin.
+
 ### 6. Verify offline
 
 ```bash
@@ -202,7 +205,7 @@ Disconnect WiFi — the app keeps working. The **OFFLINE — Running locally** b
 ```bash
 cd backend
 pytest tests -q
-# 12 passed
+# 13 passed
 ```
 
 All pipelines unit-tested with fake embedders / mock search results (no network, no models needed for CI).

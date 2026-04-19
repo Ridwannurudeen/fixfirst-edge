@@ -1,7 +1,12 @@
 # DoraHacks Submission — FixFirst Edge
 
 Fill the form at https://dorahacks.io/hackathon/2097 with the content below.
-**Do not submit until every field below is reviewed and approved.**
+
+## Owner-supplied fields before final submit
+
+- Demo video URL (YouTube unlisted)
+- Cover image / app screenshot
+- Team member names and contact details
 
 ---
 
@@ -37,7 +42,7 @@ Three Actian features make this workload possible in a single database, not a st
 
 2. **Filtered Search** — every query can be narrowed by `doc_type`, `machine_type`, `model_no`, `fault_code`, `severity`, or `part_no`. Filters hit Actian's keyword-indexed metadata, not post-filtered in Python. The diagnose endpoint uses this aggressively — it narrows part recommendations to only parts that fit the matched machine's model.
 
-3. **Hybrid Fusion (RRF)** — text queries run a reciprocal rank fusion over dense ANN (top-50 on `text_vec`) and BM25-style keyword scoring over `text_content`. This matters: rare tokens like "E04" (a fault code) barely move in dense models but land high in BM25; symptom phrases like "motor tripped on overload" are dense-retrievable but weakly keyword-scored. RRF covers both.
+3. **Hybrid Fusion (RRF)** — text queries run a reciprocal rank fusion over dense ANN (top-50 on `text_vec`) and app-side BM25-style keyword scoring over filtered `text_content`. This matters: rare tokens like "E04" (a fault code) barely move in dense models but land high in BM25; symptom phrases like "motor tripped on overload" are dense-retrievable but weakly keyword-scored. RRF covers both.
 
 ## Why offline-only
 
@@ -53,7 +58,7 @@ Industrial sites have poor connectivity, strict data-egress rules, and technicia
 
 ## Repository
 
-https://github.com/Ridwannurudeen/fixfirst-edge   *(owner to confirm/publish before submit)*
+https://github.com/Ridwannurudeen/fixfirst-edge
 
 ## Live landing page
 
@@ -61,7 +66,7 @@ https://edge.gudman.xyz
 
 ## Demo video
 
-*(YouTube unlisted URL — owner to paste after recording)*
+Owner to paste the final YouTube unlisted URL after recording.
 
 ## Architecture diagram
 
@@ -69,11 +74,11 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) — Mermaid source plus request lifecyc
 
 ## Cover image
 
-*(Screenshot of the app with the green OFFLINE pill and a filled Diagnose panel — owner to capture and attach)*
+Owner to attach a screenshot of the app with the green OFFLINE pill and a filled Diagnose panel.
 
 ## Team
 
-*(owner: fill with name, role, contact)*
+Owner to replace with final name, role, and contact details.
 
 ## What we built during the hackathon
 
@@ -84,7 +89,7 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) — Mermaid source plus request lifecyc
 - Next.js 14 frontend with UploadZone, SearchBar, FilterPanel, DiagnosePanel, OfflineBanner
 - `verify_offline.py` — cold end-to-end smoke test
 - Fixture CSV + demo asset generator (3 PDF manuals, 6 schematic images, 5 voice notes — fully regenerable from fixtures)
-- 12 backend unit tests, all green
+- 13 backend unit tests, all green
 
 ## How to run
 
