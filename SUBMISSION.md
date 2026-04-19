@@ -74,7 +74,9 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) — Mermaid source plus request lifecyc
 
 ## Cover image
 
-Owner to attach a screenshot of the app with the green OFFLINE pill and a filled Diagnose panel.
+Preferred: attach a screenshot of the app with the green OFFLINE pill and a filled Diagnose panel.
+
+Fallback branded cover asset in repo: `landing/cover.svg` (export to PNG if the submission form does not accept SVG).
 
 ## Team
 
