@@ -129,11 +129,15 @@ def _top_manual(query: str, filters: SearchFilters | None) -> dict | None:
 
 
 def _top_incident(query: str, filters: SearchFilters | None, fallback_hits: list[dict]) -> dict | None:
-    incident_filters = _merged_filters(filters, {"doc_type": "incident"})
+    incident_filters = _merged_filters(filters, {"doc_type": "incident", "verified": True})
     if query:
         hits = db.search_hybrid(query, embed_text(query), incident_filters, k=1)
     else:
-        hits = [hit for hit in fallback_hits if hit["metadata"].get("doc_type") == "incident"][:1]
+        hits = [
+            hit
+            for hit in fallback_hits
+            if hit["metadata"].get("doc_type") == "incident" and hit["metadata"].get("verified") is True
+        ][:1]
     if not hits:
         return None
     metadata = hits[0]["metadata"]

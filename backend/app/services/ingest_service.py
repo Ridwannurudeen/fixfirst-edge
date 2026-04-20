@@ -44,7 +44,7 @@ async def ingest_manual(file: UploadFile, machine_type: str, model_no: str) -> i
         temp_path.unlink(missing_ok=True)
 
 
-def ingest_incident(row: dict[str, str | int | float | None]) -> str:
+def ingest_incident(row: dict[str, str | int | float | bool | None]) -> str:
     db.init_collection()
     if _is_error_code_row(row):
         return _ingest_error_code(row)
@@ -77,6 +77,7 @@ def ingest_incident(row: dict[str, str | int | float | None]) -> str:
             "fix_applied": _string_or_none(row.get("fix_applied")),
             "downtime_min": _int_or_none(row.get("downtime_min")),
             "parts_used": _string_or_none(row.get("parts_used")),
+            "verified": _bool_or_default(row.get("verified"), False),
         }
     )
     fill_identifier_fields(metadata, text_content)
@@ -165,7 +166,7 @@ async def ingest_voice(file: UploadFile, machine_type: str) -> str:
         temp_path.unlink(missing_ok=True)
 
 
-def ingest_part(row: dict[str, str | int | float | None]) -> str:
+def ingest_part(row: dict[str, str | int | float | bool | None]) -> str:
     db.init_collection()
     part_no = str(row.get("part_no") or f"part-{_timestamp_slug()}")
     name = _string_or_none(row.get("name")) or "Unknown Part"
@@ -226,7 +227,7 @@ def _base_metadata(
     fault_code: str | None = None,
     severity: str | None = None,
     part_no: str | None = None,
-) -> dict[str, str | int | None]:
+) -> dict[str, str | int | bool | None]:
     return {
         "doc_type": doc_type,
         "machine_type": machine_type,
@@ -242,10 +243,11 @@ def _base_metadata(
         "fix_applied": None,
         "downtime_min": None,
         "parts_used": None,
+        "verified": False,
     }
 
 
-def _ingest_error_code(row: dict[str, str | int | float | None]) -> str:
+def _ingest_error_code(row: dict[str, str | int | float | bool | None]) -> str:
     source_id = str(row.get("fault_code") or f"error-code-{_timestamp_slug()}")
     description = _string_or_none(row.get("description")) or ""
     metadata = _base_metadata(
@@ -264,6 +266,7 @@ def _ingest_error_code(row: dict[str, str | int | float | None]) -> str:
             "fix_applied": None,
             "downtime_min": None,
             "parts_used": None,
+            "verified": _bool_or_default(row.get("verified"), False),
         }
     )
     fill_identifier_fields(metadata, str(metadata["text_content"]))
@@ -278,18 +281,18 @@ def _ingest_error_code(row: dict[str, str | int | float | None]) -> str:
     return doc_id
 
 
-def _is_error_code_row(row: dict[str, str | int | float | None]) -> bool:
+def _is_error_code_row(row: dict[str, str | int | float | bool | None]) -> bool:
     return bool(row.get("fault_code")) and row.get("description") is not None and row.get("symptom") is None
 
 
-def _string_or_none(value: str | int | float | None) -> str | None:
+def _string_or_none(value: str | int | float | bool | None) -> str | None:
     if value is None:
         return None
     text = str(value).strip()
     return text or None
 
 
-def _int_or_none(value: str | int | float | None) -> int | None:
+def _int_or_none(value: str | int | float | bool | None) -> int | None:
     if value is None:
         return None
     try:
@@ -300,3 +303,18 @@ def _int_or_none(value: str | int | float | None) -> int | None:
 
 def _timestamp_slug() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+
+
+def _bool_or_default(value: str | int | float | bool | None, default: bool) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes"}:
+        return True
+    if normalized in {"0", "false", "no"}:
+        return False
+    return default

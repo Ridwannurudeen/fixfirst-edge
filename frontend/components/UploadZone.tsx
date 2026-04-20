@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 
-import { FileAudio2, FileImage, FileText, Upload } from "lucide-react";
+import { FileAudio2, FileImage, Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 
 type UploadZoneProps = {
@@ -11,14 +11,12 @@ type UploadZoneProps = {
 };
 
 function labelForFile(file: File): string {
-  if (file.type.includes("pdf")) return "PDF manual";
   if (file.type.startsWith("image/")) return "Image query";
   if (file.type.startsWith("audio/")) return "Voice note";
   return "Uploaded file";
 }
 
 function iconForFile(file: File) {
-  if (file.type.includes("pdf")) return FileText;
   if (file.type.startsWith("image/")) return FileImage;
   if (file.type.startsWith("audio/")) return FileAudio2;
   return Upload;
@@ -33,6 +31,10 @@ export function UploadZone({ file, onFileSelect }: UploadZoneProps) {
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {
+      "audio/wav": [".wav"],
+      "image/*": [],
+    },
     maxFiles: 1,
     onDrop,
   });
@@ -49,7 +51,7 @@ export function UploadZone({ file, onFileSelect }: UploadZoneProps) {
       >
         <input {...getInputProps()} />
         <SelectedIcon className="mb-3 h-8 w-8 text-zinc-400" />
-        <p className="text-sm font-medium">Drop PDF, image, or WAV</p>
+        <p className="text-sm font-medium">Drop image or WAV</p>
         <p className="mt-1 text-sm text-zinc-500">Or click to browse local files</p>
       </div>
       {file ? (

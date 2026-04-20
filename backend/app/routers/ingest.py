@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, File, Form, UploadFile
 
-from app.schemas import IngestRowRequest
+from app.schemas import IncidentRowRequest, PartRowRequest
 from app.services import ingest_service
 
 router = APIRouter(tags=["ingest"])
@@ -19,8 +19,8 @@ async def ingest_manual(
 
 
 @router.post("/ingest/incident")
-async def ingest_incident(body: IngestRowRequest) -> dict[str, str]:
-    doc_id = ingest_service.ingest_incident(body.row)
+async def ingest_incident(body: IncidentRowRequest) -> dict[str, str]:
+    doc_id = ingest_service.ingest_incident(body.row.model_dump())
     return {"id": doc_id}
 
 
@@ -45,12 +45,12 @@ async def ingest_voice(
 
 
 @router.post("/ingest/part")
-async def ingest_part(body: IngestRowRequest) -> dict[str, str]:
-    doc_id = ingest_service.ingest_part(body.row)
+async def ingest_part(body: PartRowRequest) -> dict[str, str]:
+    doc_id = ingest_service.ingest_part(body.row.model_dump())
     return {"id": doc_id}
 
 
 @router.post("/incident/save")
-async def save_incident(body: IngestRowRequest) -> dict[str, str]:
-    doc_id = ingest_service.ingest_incident(body.row)
+async def save_incident(body: IncidentRowRequest) -> dict[str, str]:
+    doc_id = ingest_service.ingest_incident(body.row.model_dump())
     return {"id": doc_id}

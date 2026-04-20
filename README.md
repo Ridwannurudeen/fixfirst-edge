@@ -189,7 +189,7 @@ cd backend
 python scripts/verify_offline.py
 ```
 
-Disconnect WiFi — the app keeps working. The **OFFLINE — Ready locally** banner stays green whenever Actian is reachable and the `incidents` collection is initialized; it switches to **OFFLINE — Local DB not initialized** if the collection is missing, so the banner reflects real system state, not just a hard-coded label.
+The verifier exercises `/api/health` plus the real `/api/diagnose` flow for text, image, and voice. If image or voice fixtures are missing under `data/raw/`, those checks print `SKIP` instead of pretending the system was verified. Disconnect WiFi after ingest — the app keeps working. The **OFFLINE — Ready locally** banner stays green whenever Actian is reachable and the `incidents` collection is initialized; it switches to **OFFLINE — Local DB not initialized** if the collection is missing, so the banner reflects real system state, not just a hard-coded label.
 
 ---
 
@@ -210,7 +210,7 @@ The Next.js UI is built around a single unified entry point — `POST /api/diagn
 | POST | `/api/search/voice` | multipart: WAV + filters → `audio_text_vec` ANN fused with transcript hybrid |
 | POST | `/api/search/multimodal` | multipart: text + image + audio + filters → RRF across modalities |
 | POST | `/api/diagnose` | multipart: query + image + voice + filters → **primary UI entry point**, templated evidence answer |
-| POST | `/api/incident/save` | JSON row → live-indexed |
+| POST | `/api/incident/save` | JSON verified incident row → live-indexed |
 
 ---
 
@@ -219,7 +219,6 @@ The Next.js UI is built around a single unified entry point — `POST /api/diagn
 ```bash
 cd backend
 pytest tests -q
-# 13 passed
 ```
 
 All pipelines unit-tested with fake embedders / mock search results (no network, no models needed for CI).
@@ -251,7 +250,7 @@ fixfirst-edge/
 │   │   └── services/            # ingest_service, search_service, diagnose_service
 │   ├── scripts/
 │   │   ├── bulk_ingest.py       # walks data/raw/, calls ingest endpoints
-│   │   ├── verify_offline.py    # cold smoke test
+│   │   ├── verify_offline.py    # offline diagnose verifier
 │   │   └── pull_actian.sh       # retry loop for docker.io pulls
 │   └── tests/
 ├── frontend/

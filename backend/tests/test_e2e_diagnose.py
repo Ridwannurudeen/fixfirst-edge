@@ -58,6 +58,7 @@ def _incident_hit(inc: dict) -> dict:
             "fix_applied": inc["fix_applied"],
             "downtime_min": int(inc["downtime_min"]) if inc.get("downtime_min") else None,
             "parts_used": inc.get("parts_used") or None,
+            "verified": True,
         },
     }
 
@@ -189,5 +190,59 @@ def test_diagnose_honors_severity_filter(monkeypatch) -> None:
         part_filter = next(f for f in observed_filters if f.get("doc_type") == "part")
         assert part_filter.get("machine_type") == critical_incident["machine_type"]
         assert part_filter.get("model_no") == critical_incident["model_no"]
+
+    asyncio.run(run())
+
+
+def test_diagnose_requires_verified_incidents(monkeypatch) -> None:
+    def fake_embed_text(_text: str) -> np.ndarray:
+        return np.zeros(384, dtype=np.float32)
+
+    def fake_search_hybrid(_query: str, _vec, filters, k: int = 10) -> list[dict]:
+        doc_type = (filters or {}).get("doc_type")
+        if doc_type == "manual":
+            return [_manual_hit()]
+        if doc_type == "incident":
+            assert (filters or {}).get("verified") is True
+            return [
+                {
+                    "id": "incident:inc-verified",
+                    "score": 0.91,
+                    "metadata": {
+                        "doc_type": "incident",
+                        "source_id": "inc-verified",
+                        "model_no": "CX-200",
+                        "machine_type": "Conveyor",
+                        "fix_applied": "Replace relay and confirm current draw.",
+                        "downtime_min": 18,
+                        "verified": True,
+                    },
+                }
+            ]
+        if doc_type == "part":
+            return [
+                {
+                    "id": "part:OL-E04-R",
+                    "score": 0.77,
+                    "metadata": {
+                        "doc_type": "part",
+                        "part_no": "OL-E04-R",
+                        "name": "Thermal Overload Relay",
+                        "source_id": "OL-E04-R",
+                    },
+                }
+            ]
+        return []
+
+    monkeypatch.setattr("app.services.search_service.embed_text", fake_embed_text)
+    monkeypatch.setattr("app.services.search_service.db.search_hybrid", fake_search_hybrid)
+
+    async def run() -> None:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.post("/api/diagnose", data={"query": "E04 motor overload on CX-200"})
+        assert response.status_code == 200
+        body = response.json()
+        assert body["evidence"]["similar_incident"]["id"] == "inc-verified"
 
     asyncio.run(run())

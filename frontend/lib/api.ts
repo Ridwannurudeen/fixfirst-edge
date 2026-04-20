@@ -27,6 +27,20 @@ export type DiagnoseResponse = {
   transcript: string | null;
 };
 
+export type IncidentSaveRow = {
+  fault_code: string;
+  fix_applied: string;
+  id: string;
+  machine_type: string;
+  model_no: string;
+  downtime_min: number;
+  part_no: string | null;
+  parts_used: string | null;
+  severity: string | null;
+  symptom: string;
+  verified: boolean;
+};
+
 type DiagnoseRequest = {
   query: string;
   file: File | null;
@@ -71,7 +85,7 @@ export async function diagnose({ query, file, filters }: DiagnoseRequest): Promi
   return (await response.json()) as DiagnoseResponse;
 }
 
-export async function saveIncident(row: Record<string, string | number | null>): Promise<{ id: string }> {
+export async function saveIncident(row: IncidentSaveRow): Promise<{ id: string }> {
   const response = await fetch(`${API_BASE}/api/incident/save`, {
     body: JSON.stringify({ row }),
     headers: {

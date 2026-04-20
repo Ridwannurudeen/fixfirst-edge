@@ -1,18 +1,19 @@
 import { ResultCard } from "@/components/ResultCard";
-import { SaveIncidentModal } from "@/components/SaveIncidentModal";
+import { SaveIncidentModal, type SaveIncidentDraft } from "@/components/SaveIncidentModal";
 import type { DiagnoseResponse } from "@/lib/api";
 
 type DiagnosePanelProps = {
   result: DiagnoseResponse | null;
+  saveDefaults: SaveIncidentDraft;
   transcript: string | null;
-  onSave: () => void;
+  onSave: (draft: SaveIncidentDraft) => Promise<void>;
 };
 
 function confidenceLabel(confidence: number): string {
   return `${Math.round(confidence * 100)}% confidence`;
 }
 
-export function DiagnosePanel({ result, transcript, onSave }: DiagnosePanelProps) {
+export function DiagnosePanel({ result, saveDefaults, transcript, onSave }: DiagnosePanelProps) {
   const evidence = result?.evidence;
   const recommendations = result?.recommended_steps ?? [];
 
@@ -70,7 +71,7 @@ export function DiagnosePanel({ result, transcript, onSave }: DiagnosePanelProps
           <p className="text-sm text-zinc-500">Run a diagnosis to generate deterministic next steps.</p>
         )}
       </div>
-      <SaveIncidentModal disabled={result === null} onSave={onSave} />
+      <SaveIncidentModal defaults={saveDefaults} disabled={result === null} onSave={onSave} />
     </section>
   );
 }

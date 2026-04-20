@@ -39,6 +39,7 @@ _FIELD_TYPES: dict[str, Any] = {
     "fault_code": "keyword",
     "severity": "keyword",
     "part_no": "keyword",
+    "verified": "boolean",
     "text_content": "text",
     "created_at": "datetime",
     "source_id": "keyword",
@@ -240,6 +241,8 @@ def _build_filter(filters: dict | None) -> Any:
             builder.must(field.eq(int(value)))
         elif field_type == "datetime":
             builder.must(field.eq(str(value)))
+        elif field_type == "boolean":
+            builder.must(field.eq(bool(value)))
         else:
             builder.must(field.eq(value))
     return builder.build()
