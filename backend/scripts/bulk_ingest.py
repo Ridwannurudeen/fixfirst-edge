@@ -39,7 +39,7 @@ def main() -> None:
         incidents_path = raw_root / "incidents.csv"
         if incidents_path.exists():
             for row in load_incidents(str(incidents_path)):
-                client.post("/ingest/incident", json={"row": row}).raise_for_status()
+                client.post("/ingest/incident", json={"row": {**row, "verified": True}}).raise_for_status()
             print(f"incidents {incidents_path.name}")
 
         parts_path = raw_root / "parts.csv"
@@ -51,7 +51,7 @@ def main() -> None:
         error_codes_path = raw_root / "error_codes.csv"
         if error_codes_path.exists():
             for row in load_error_codes(str(error_codes_path)):
-                client.post("/ingest/incident", json={"row": row}).raise_for_status()
+                client.post("/ingest/incident", json={"row": {**row, "verified": True}}).raise_for_status()
             print(f"error-codes {error_codes_path.name}")
 
 

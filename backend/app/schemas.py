@@ -27,8 +27,35 @@ class HealthResponse(BaseModel):
     collection_ready: bool
 
 
-class IngestRowRequest(BaseModel):
-    row: dict[str, str | int | float | None]
+class IncidentRow(BaseModel):
+    id: str | None = None
+    machine_type: str | None = None
+    model_no: str | None = None
+    fault_code: str | None = None
+    severity: Severity | None = None
+    symptom: str | None = None
+    fix_applied: str | None = None
+    downtime_min: int | None = None
+    parts_used: str | None = None
+    part_no: str | None = None
+    description: str | None = None
+    verified: bool = False
+
+
+class PartRow(BaseModel):
+    part_no: str | None = None
+    name: str | None = None
+    description: str | None = None
+    machine_type: str | None = None
+    model_no: str | None = None
+
+
+class IncidentRowRequest(BaseModel):
+    row: IncidentRow
+
+
+class PartRowRequest(BaseModel):
+    row: PartRow
 
 
 class SearchTextRequest(BaseModel):
@@ -39,7 +66,7 @@ class SearchTextRequest(BaseModel):
 class SearchResult(BaseModel):
     id: str
     score: float
-    metadata: dict[str, str | int | float | None]
+    metadata: dict[str, str | int | float | bool | None]
 
 
 class SearchResponse(BaseModel):

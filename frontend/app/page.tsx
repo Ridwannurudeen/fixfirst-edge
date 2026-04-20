@@ -7,12 +7,12 @@ import { FilterPanel, type FilterValues } from "@/components/FilterPanel";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SearchBar } from "@/components/SearchBar";
 import { UploadZone } from "@/components/UploadZone";
+import { type SaveIncidentDraft } from "@/components/SaveIncidentModal";
 import { diagnose, saveIncident, type DiagnoseResponse } from "@/lib/api";
 
 const emptyFilters: FilterValues = {
   machineType: "",
   severity: "",
-  docType: "",
 };
 
 export default function Home() {
@@ -29,9 +29,22 @@ export default function Home() {
     const payload: Record<string, string> = {};
     if (filters.machineType) payload.machine_type = filters.machineType;
     if (filters.severity) payload.severity = filters.severity;
-    if (filters.docType) payload.doc_type = filters.docType;
     return payload;
   }, [filters]);
+
+  const saveDefaults = useMemo<SaveIncidentDraft>(
+    () => ({
+      machine_type: filters.machineType,
+      model_no: "",
+      fault_code: "",
+      fix_applied: "",
+      downtime_min: "",
+      parts_used: result?.evidence.candidate_part?.part_no ?? "",
+      severity: filters.severity,
+      symptom: query || transcript || "",
+    }),
+    [filters.machineType, filters.severity, query, result?.evidence.candidate_part?.part_no, transcript],
+  );
 
   async function handleDiagnose(): Promise<void> {
     setLoading(true);
@@ -53,29 +66,30 @@ export default function Home() {
     }
   }
 
-  async function handleSave(): Promise<void> {
+  async function handleSave(draft: SaveIncidentDraft): Promise<void> {
     if (result === null) {
       return;
     }
-    const incidentRow: Record<string, string | number | null> = {
+    const incidentRow = {
       id: `manual-save-${Date.now()}`,
-      machine_type: filters.machineType || "unknown",
-      model_no: null,
-      fault_code: query || transcript || "unknown",
-      severity: filters.severity || null,
-      symptom: query || transcript || "Manual save",
-      fix_applied: result.recommended_steps.join(" | "),
-      downtime_min: 0,
-      parts_used: result.evidence.candidate_part?.part_no ?? null,
-      part_no: result.evidence.candidate_part?.part_no ?? null,
+      machine_type: draft.machine_type.trim(),
+      model_no: draft.model_no.trim(),
+      fault_code: draft.fault_code.trim(),
+      severity: draft.severity.trim() || null,
+      symptom: draft.symptom.trim(),
+      fix_applied: draft.fix_applied.trim(),
+      downtime_min: Number(draft.downtime_min),
+      parts_used: draft.parts_used.trim() || null,
+      part_no: draft.parts_used.trim() || null,
+      verified: true,
     };
 
     try {
+      setError(null);
       const saved = await saveIncident(incidentRow);
       setSaveMessage(`Saved incident ${saved.id}`);
     } catch (saveError) {
-      const message = saveError instanceof Error ? saveError.message : "Save failed";
-      setError(message);
+      throw (saveError instanceof Error ? saveError : new Error("Save failed"));
     }
   }
 
@@ -107,7 +121,7 @@ export default function Home() {
             {error ? <p className="text-sm text-red-400">{error}</p> : null}
             {saveMessage ? <p className="text-sm text-emerald-300">{saveMessage}</p> : null}
           </section>
-          <DiagnosePanel result={result} transcript={transcript} onSave={handleSave} />
+          <DiagnosePanel result={result} saveDefaults={saveDefaults} transcript={transcript} onSave={handleSave} />
         </div>
       </div>
     </main>
