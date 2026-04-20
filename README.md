@@ -207,7 +207,7 @@ cd backend
 python scripts/verify_offline.py
 ```
 
-The verifier exercises `/api/health` plus the real `/api/diagnose` flow for text, image, and voice. If image or voice fixtures are missing under `data/raw/`, those checks print `SKIP` instead of pretending the system was verified. Disconnect WiFi after ingest — the app keeps working. The **OFFLINE — Ready locally** banner stays green whenever Actian is reachable and the `incidents` collection is initialized; it switches to **OFFLINE — Local DB not initialized** if the collection is missing, so the banner reflects real system state, not just a hard-coded label.
+The verifier exercises `/api/health` plus the real `/api/diagnose` flow for text, image, and voice. If image or voice fixtures are missing under `data/raw/`, those checks print `SKIP` instead of pretending the system was verified. Disconnect WiFi after ingest — the app keeps working. The status banner now has three honest states: **OFFLINE — Ready locally** when Actian is reachable and the `incidents` collection is initialized, **OFFLINE — Local DB not initialized** when the backend is up but the collection is missing, and **OFFLINE — Local API unavailable** when the frontend cannot reach the backend at all.
 
 ---
 

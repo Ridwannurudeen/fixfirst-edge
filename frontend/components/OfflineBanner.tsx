@@ -5,10 +5,18 @@ import useSWR from "swr";
 import { fetchHealth } from "@/lib/api";
 
 export function OfflineBanner() {
-  const { data } = useSWR("health", fetchHealth, {
+  const { data, error } = useSWR("health", fetchHealth, {
     refreshInterval: 5000,
     revalidateOnFocus: false
   });
+
+  if (error !== undefined) {
+    return (
+      <div className="inline-flex items-center rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300">
+        OFFLINE - Local API unavailable
+      </div>
+    );
+  }
 
   if (data === undefined) {
     return (

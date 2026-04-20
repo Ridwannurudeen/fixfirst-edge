@@ -8,6 +8,7 @@ export type SaveIncidentDraft = {
   fault_code: string;
   fix_applied: string;
   downtime_min: string;
+  part_no: string;
   parts_used: string;
   severity: string;
   symptom: string;
@@ -155,7 +156,17 @@ export function SaveIncidentModal({ disabled, defaults, onSave }: SaveIncidentMo
                 />
               </label>
               <label className="space-y-1 text-sm md:col-span-2">
-                <span className="text-zinc-400">Parts used (optional)</span>
+                <span className="text-zinc-400">Primary part no. (optional)</span>
+                <input
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-zinc-100 outline-none transition focus:border-emerald-500"
+                  onChange={(event) => {
+                    setDraft({ ...draft, part_no: event.target.value });
+                  }}
+                  value={draft.part_no}
+                />
+              </label>
+              <label className="space-y-1 text-sm md:col-span-2">
+                <span className="text-zinc-400">Parts used (optional, free text)</span>
                 <input
                   className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-zinc-100 outline-none transition focus:border-emerald-500"
                   onChange={(event) => {
