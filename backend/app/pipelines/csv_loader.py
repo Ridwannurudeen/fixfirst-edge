@@ -11,7 +11,9 @@ def _load_csv(path: str, required_columns: set[str]) -> list[dict]:
     if missing:
         joined = ", ".join(missing)
         raise ValueError(f"Missing required columns: {joined}")
-    return frame.to_dict(orient="records")
+    # pandas turns empty cells into NaN floats; swap back to None so the
+    # typed ingest schemas (IncidentRow, PartRow) validate cleanly.
+    return frame.where(frame.notna(), None).to_dict(orient="records")
 
 
 def load_incidents(path: str) -> list[dict]:
