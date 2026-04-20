@@ -4,6 +4,8 @@
 
 Search by photo of a broken part, error code, voice note, manual snippet, or past incident. Get back evidence-backed fix recommendations — the relevant manual section, the closest historical incident, and the likely replacement part. Everything runs **locally, with no internet**, on a laptop.
 
+> **For the Actian VectorAI DB Build Challenge.** FixFirst Edge uses all three of the Actian features the rubric asks for: **named vectors** for multimodal retrieval (text + image + audio in one collection), **filtered search** with indexed keyword fields, and **hybrid RRF fusion** across a dense ANN lane and an Actian-native identifier-filtered ANN lane. It runs **100% offline** on a 16 GB laptop, CPU-only, with no outbound network calls in the diagnose path. End-to-end p50 **457 ms**, p95 **567 ms** (see [Benchmark](#benchmark)).
+
 ---
 
 ## Why Actian VectorAI DB
@@ -219,10 +221,24 @@ The Next.js UI is built around a single unified entry point — `POST /api/diagn
 ```bash
 cd backend
 pytest tests -q
-# 13 passed
+# 18 passed
 ```
 
 All pipelines unit-tested with fake embedders / mock search results (no network, no models needed for CI).
+
+## Benchmark
+
+End-to-end `/api/diagnose` latency, warmed, over 20 mixed queries (error codes, part numbers, symptom phrases, machine IDs) against the full demo corpus — **3 PDF service manuals, 30 incidents, 25 parts, 13 error codes, 6 schematic images, 5 voice notes**. Runs on a 16 GB laptop, CPU-only, WSL2 + Docker, all models local:
+
+| metric | ms |
+|---|---|
+| p50 | **457** |
+| p95 | **567** |
+| mean | 471 |
+| min | 421 |
+| max | 568 |
+
+20/20 queries returned a full evidence set (manual section + similar incident + candidate part). Every request exercises: query-text embedding → hybrid RRF (dense ANN + identifier-filtered ANN) → three additional per-slot retrievals for manual/incident/part. Reproduce with `python backend/scripts/bench_diagnose.py`.
 
 ## Submission Readiness
 
