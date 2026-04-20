@@ -4,7 +4,7 @@
 
 Search by photo of a broken part, error code, voice note, manual snippet, or past incident. Get back evidence-backed fix recommendations — the relevant manual section, the closest historical incident, and the likely replacement part. Everything runs **locally, with no internet**, on a laptop.
 
-> **For the Actian VectorAI DB Build Challenge.** FixFirst Edge uses all three of the Actian features the rubric asks for: **named vectors** for multimodal retrieval (text + image + audio in one collection), **filtered search** with indexed keyword fields, and **hybrid RRF fusion** across a dense ANN lane and an Actian-native identifier-filtered ANN lane. It runs **100% offline** on a 16 GB laptop, CPU-only, with no outbound network calls in the diagnose path. End-to-end p50 **291 ms**, p95 **421 ms** (see [Benchmark](#benchmark)).
+> **For the Actian VectorAI DB Build Challenge.** FixFirst Edge uses all three of the Actian features the rubric asks for: **named vectors** for multimodal retrieval (text + image + audio in one collection), **filtered search** with indexed keyword fields, and **hybrid RRF fusion** across a dense ANN lane and an Actian-native identifier-filtered ANN lane. It runs **100% offline** on a 16 GB laptop, CPU-only, with no outbound network calls in the diagnose path. End-to-end p50 **~850 ms**, p95 **~1100 ms** (see [Benchmark](#benchmark)).
 
 ---
 
@@ -248,11 +248,13 @@ End-to-end `/api/diagnose` latency, warmed, over 20 mixed queries (error codes, 
 
 | metric | ms |
 |---|---|
-| p50 | **291** |
-| p95 | **421** |
-| mean | 304 |
-| min | 223 |
-| max | 454 |
+| p50 | **843** |
+| p95 | **1093** |
+| mean | 900 |
+| min | 781 |
+| max | 1094 |
+
+Numbers are stable across three consecutive runs (tightest cluster: p50 843–859 ms, p95 1081–1120 ms) on a fresh Actian collection after `bulk_ingest`. Each request embeds the query, runs hybrid RRF (dense + identifier-filtered ANN), then runs three more filter-scoped retrievals for the manual/incident/part slots — nine total vector operations per user query. Headroom exists: larger corpus + GPU embedding would trade differently.
 
 20/20 queries returned a full evidence set (manual section + similar incident + candidate part). Every request exercises: query-text embedding → hybrid RRF (dense ANN + identifier-filtered ANN) → three additional per-slot retrievals for manual/incident/part. Reproduce with `python backend/scripts/bench_diagnose.py`.
 

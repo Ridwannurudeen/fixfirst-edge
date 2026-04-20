@@ -169,6 +169,7 @@ def _field_index_specs() -> list[tuple[str, Any]]:
         ("fault_code", FieldType.FieldTypeKeyword),
         ("severity", FieldType.FieldTypeKeyword),
         ("part_no", FieldType.FieldTypeKeyword),
+        ("verified", FieldType.FieldTypeBool),
         ("text_content", FieldType.FieldTypeText),
         ("created_at", FieldType.FieldTypeDatetime),
         ("source_id", FieldType.FieldTypeKeyword),
