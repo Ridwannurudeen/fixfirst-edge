@@ -39,7 +39,8 @@ export default function Home() {
       fault_code: "",
       fix_applied: "",
       downtime_min: "",
-      parts_used: result?.evidence.candidate_part?.part_no ?? "",
+      part_no: result?.evidence.candidate_part?.part_no ?? "",
+      parts_used: "",
       severity: filters.severity,
       symptom: query || transcript || "",
     }),
@@ -80,7 +81,7 @@ export default function Home() {
       fix_applied: draft.fix_applied.trim(),
       downtime_min: Number(draft.downtime_min),
       parts_used: draft.parts_used.trim() || null,
-      part_no: draft.parts_used.trim() || null,
+      part_no: draft.part_no.trim() || null,
       verified: true,
     };
 
