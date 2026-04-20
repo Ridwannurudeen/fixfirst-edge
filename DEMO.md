@@ -43,7 +43,7 @@
 **Visual**: click the search bar, type `E04 motor overload`, hit Enter.
 
 **VO**:
-> "Type an error code. FixFirst Edge runs a hybrid search — dense vector ANN over embeddings, plus BM25 keyword — fused with reciprocal rank fusion. That matters because 'E04' is a rare token; dense alone would miss it."
+> "Type an error code. FixFirst Edge runs a hybrid search — dense vector ANN over embeddings, plus a second Actian retrieval lane filtered by exact identifiers like fault codes and model numbers — fused with reciprocal rank fusion. That matters because 'E04' or 'CX-200' are identifiers dense alone can underweight."
 
 **Visual highlight**: the Diagnose panel fills — manual section, similar incident, candidate part, confidence bar, recommended steps.
 

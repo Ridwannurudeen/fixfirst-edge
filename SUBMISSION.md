@@ -42,7 +42,7 @@ Three Actian features make this workload possible in a single database, not a st
 
 2. **Filtered Search** — every query can be narrowed by `doc_type`, `machine_type`, `model_no`, `fault_code`, `severity`, or `part_no`. Filters hit Actian's keyword-indexed metadata, not post-filtered in Python. The diagnose endpoint uses this aggressively — it narrows part recommendations to only parts that fit the matched machine's model.
 
-3. **Hybrid Fusion (RRF)** — text queries run a reciprocal rank fusion over dense ANN (top-50 on `text_vec`) and app-side BM25-style keyword scoring over filtered `text_content`. This matters: rare tokens like "E04" (a fault code) barely move in dense models but land high in BM25; symptom phrases like "motor tripped on overload" are dense-retrievable but weakly keyword-scored. RRF covers both.
+3. **Hybrid Fusion (RRF)** — text queries run a reciprocal rank fusion over dense ANN (top-50 on `text_vec`) and a second Actian-native retrieval lane that re-runs ANN with exact identifier filters extracted from the query (`fault_code`, `model_no`, `part_no`). During ingest, those identifiers are backfilled into indexed metadata fields for manuals, incidents, parts, and voice notes. This matters: tokens like `E04`, `CX-200`, and `OL-E04-R` are promoted through indexed metadata filters, while symptom phrases like "motor tripped on overload" are still dense-retrievable. RRF covers both.
 
 ## Why offline-only
 

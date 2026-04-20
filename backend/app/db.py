@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import uuid
 from collections.abc import Iterable
 from typing import Any, Literal
@@ -8,6 +7,7 @@ from typing import Any, Literal
 import numpy as np
 
 from app.config import settings
+from app.pipelines.identifier_extractor import extract_identifiers
 
 _DOC_ID_NAMESPACE = uuid.UUID("c5f04f3e-0f7c-4a10-9e6b-3fe1b3f2a6a4")
 
@@ -103,8 +103,11 @@ def search_audio(query_vec: np.ndarray, filters: dict | None, k: int = 10) -> li
 def search_hybrid(query_text: str, query_vec: np.ndarray, filters: dict | None, k: int = 10) -> list[dict]:
     init_collection()
     dense_hits = _search_vector("text_vec", query_vec, filters, 50)
-    keyword_hits = _search_keyword(query_text, filters, 50)
-    return _rrf_merge([dense_hits, keyword_hits], k)
+    identifier_hits = _search_identifier_branch(query_text, query_vec, filters, 50)
+    rankings = [dense_hits]
+    if identifier_hits:
+        rankings.append(identifier_hits)
+    return _rrf_merge(rankings, k)
 
 
 def health() -> bool:
@@ -210,61 +213,18 @@ def _search_vector(vector_name: VectorName, query_vec: np.ndarray, filters: dict
     return [_to_hit(result) for result in results]
 
 
-def _search_keyword(query_text: str, filters: dict | None, k: int) -> list[dict]:
-    init_collection()
-    tokens = _tokenize(query_text)
-    if not tokens:
+def _search_identifier_branch(query_text: str, query_vec: np.ndarray, filters: dict | None, k: int) -> list[dict]:
+    # Identifier extraction keeps the second retrieval branch inside Actian by
+    # promoting exact fault/model/part matches through metadata filters.
+    identifiers = {key: value for key, value in extract_identifiers(query_text).items() if value}
+    if not identifiers:
         return []
-    points = _scroll_points(filters)
-    if not points:
-        return []
-    doc_count = len(points)
-    document_frequency: dict[str, int] = {}
-    for point in points:
-        content_tokens = set(_tokenize(_payload(point).get("text_content", "")))
-        for token in tokens:
-            if token in content_tokens:
-                document_frequency[token] = document_frequency.get(token, 0) + 1
 
-    hits: list[dict] = []
-    for point in points:
-        payload = _payload(point)
-        content_tokens = _tokenize(payload.get("text_content", ""))
-        if not content_tokens:
-            continue
-        score = 0.0
-        for token in tokens:
-            term_frequency = content_tokens.count(token)
-            if term_frequency == 0:
-                continue
-            inverse_document_frequency = math.log((doc_count + 1) / (document_frequency.get(token, 0) + 1)) + 1.0
-            score += term_frequency * inverse_document_frequency
-        if score == 0.0:
-            continue
-        score /= 1.0 + math.log(len(content_tokens) + 1)
-        hits.append({"id": str(point.id), "score": float(score), "metadata": payload})
-    hits.sort(key=lambda item: item["score"], reverse=True)
-    return hits[:k]
-
-
-def _scroll_points(filters: dict | None) -> list[Any]:
-    collected: list[Any] = []
-    offset: str | int | None = None
-    built_filter = _build_filter(filters)
-    with _client() as client:
-        while True:
-            points, next_offset = client.points.scroll(
-                settings.collection_name,
-                offset=offset,
-                filter=built_filter,
-                limit=64,
-                with_payload=True,
-            )
-            collected.extend(points)
-            if next_offset is None:
-                break
-            offset = next_offset
-    return collected
+    rankings: list[list[dict]] = []
+    candidate_filters = _identifier_filters(identifiers)
+    for extra_filters in candidate_filters:
+        rankings.append(_search_vector("text_vec", query_vec, _merge_filters(filters, extra_filters), k))
+    return _rrf_merge(rankings, k)
 
 
 def _build_filter(filters: dict | None) -> Any:
@@ -285,6 +245,25 @@ def _build_filter(filters: dict | None) -> Any:
     return builder.build()
 
 
+def _identifier_filters(identifiers: dict[str, str]) -> list[dict[str, str]]:
+    rankings: list[dict[str, str]] = []
+    if len(identifiers) > 1:
+        rankings.append(dict(identifiers))
+    for field_name in ("fault_code", "part_no", "model_no"):
+        value = identifiers.get(field_name)
+        if value:
+            rankings.append({field_name: value})
+    return rankings
+
+
+def _merge_filters(base: dict | None, extra: dict[str, str]) -> dict[str, str]:
+    merged: dict[str, str] = {}
+    if base:
+        merged.update(base)
+    merged.update(extra)
+    return merged
+
+
 def _payload(point: Any) -> dict[str, Any]:
     payload = getattr(point, "payload", None)
     return payload if isinstance(payload, dict) else {}
@@ -297,10 +276,6 @@ def _to_hit(result: Any) -> dict[str, Any]:
         "score": float(getattr(result, "score", 0.0)),
         "metadata": payload,
     }
-
-
-def _tokenize(text: str) -> list[str]:
-    return [token for token in "".join(char.lower() if char.isalnum() else " " for char in text).split() if token]
 
 
 def _rrf_merge(rankings: Iterable[list[dict]], k: int) -> list[dict]:

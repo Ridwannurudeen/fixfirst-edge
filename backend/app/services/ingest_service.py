@@ -8,6 +8,7 @@ from fastapi import UploadFile
 
 from app import db
 from app.pipelines.audio_transcriber import transcribe
+from app.pipelines.identifier_extractor import fill_identifier_fields
 from app.pipelines.image_embedder import embed_image
 from app.pipelines.pdf_chunker import chunk_pdf
 from app.pipelines.text_embedder import embed_text
@@ -20,18 +21,20 @@ async def ingest_manual(file: UploadFile, machine_type: str, model_no: str) -> i
         chunks = chunk_pdf(str(temp_path))
         for chunk in chunks:
             metadata = _base_metadata("manual", machine_type, model_no=model_no)
+            chunk_text = str(chunk["text"])
             metadata.update(
                 {
-                    "text_content": str(chunk["text"]),
+                    "text_content": chunk_text,
                     "source_id": file.filename or temp_path.name,
                     "page": int(chunk["page"]),
                     "chunk_id": int(chunk["chunk_id"]),
                 }
             )
+            fill_identifier_fields(metadata, chunk_text)
             doc_id = f"manual:{metadata['source_id']}:{metadata['page']}:{metadata['chunk_id']}"
             db.upsert(
                 doc_id=doc_id,
-                text_vec=embed_text(str(chunk["text"])),
+                text_vec=embed_text(chunk_text),
                 image_vec=None,
                 audio_text_vec=None,
                 metadata=metadata,
@@ -76,6 +79,7 @@ def ingest_incident(row: dict[str, str | int | float | None]) -> str:
             "parts_used": _string_or_none(row.get("parts_used")),
         }
     )
+    fill_identifier_fields(metadata, text_content)
     doc_id = f"incident:{source_id}"
     db.upsert(
         doc_id=doc_id,
@@ -115,6 +119,7 @@ async def ingest_image(
                 "parts_used": None,
             }
         )
+        fill_identifier_fields(metadata, text_content)
         doc_id = f"image:{source_id}"
         db.upsert(
             doc_id=doc_id,
@@ -146,6 +151,7 @@ async def ingest_voice(file: UploadFile, machine_type: str) -> str:
                 "parts_used": None,
             }
         )
+        fill_identifier_fields(metadata, transcript)
         doc_id = f"voice:{source_id}"
         db.upsert(
             doc_id=doc_id,
@@ -193,6 +199,7 @@ def ingest_part(row: dict[str, str | int | float | None]) -> str:
             "name": name,
         }
     )
+    fill_identifier_fields(metadata, text_content)
     doc_id = f"part:{part_no}"
     db.upsert(
         doc_id=doc_id,
@@ -259,6 +266,7 @@ def _ingest_error_code(row: dict[str, str | int | float | None]) -> str:
             "parts_used": None,
         }
     )
+    fill_identifier_fields(metadata, str(metadata["text_content"]))
     doc_id = f"error_code:{source_id}"
     db.upsert(
         doc_id=doc_id,
