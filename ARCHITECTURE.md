@@ -40,7 +40,7 @@ flowchart TB
     named vectors: text_vec, image_vec, audio_text_vec
     keyword filters: doc_type, machine_type, model_no,
                      fault_code, severity, part_no
-    hybrid: RRF dense ANN + BM25)]
+    hybrid: RRF dense ANN + identifier-filtered ANN)]
 
   user --> frontend
   frontend -->|HTTP| routers
@@ -102,15 +102,15 @@ collection: incidents
   ────────────────────────────────────────────────
     doc_type         keyword   manual | incident | part | error_code | voice_note
     machine_type     keyword
-    model_no         keyword
-    fault_code       keyword
+    model_no         keyword   provided or backfilled from text
+    fault_code       keyword   provided or backfilled from text
     severity         keyword   low | medium | high | critical
-    part_no          keyword
+    part_no          keyword   provided or backfilled from text
     source_id        keyword
 
   payload fields (not indexed)
   ────────────────────────────────────────────────
-    text_content     text      used by BM25 side of hybrid fusion
+    text_content     text      returned as auditable snippet / evidence payload
     created_at       datetime
     page             integer
     chunk_id         integer
@@ -126,8 +126,8 @@ collection: incidents
 query: "E04 motor overload"
 
           ┌────────────────────────────────┐       ┌───────────────────────────────┐
-          │ text_vec ANN top-50            │       │ BM25 over text_content top-50 │
-          │  (bge-small embedding)         │       │  (term-freq × log-idf)        │
+          │ text_vec ANN top-50            │       │ identifier-filtered ANN top-50 │
+          │  (bge-small embedding)         │       │  (fault/model/part exact)      │
           └────────────────┬───────────────┘       └──────────────┬────────────────┘
                            │                                      │
                            └──────────────────┬───────────────────┘
@@ -139,7 +139,7 @@ query: "E04 motor overload"
                                         top-k returned
 ```
 
-Rare tokens like error codes ("E04", "P21") land high in BM25, barely move in dense. Symptom phrases ("motor tripped on overload") are dense-retrievable, barely move in BM25. RRF covers both.
+Rare tokens like error codes (`E04`) and identifiers like `CX-200` or `OL-E04-R` are promoted through the identifier-filtered branch, while symptom phrases ("motor tripped on overload") are dense-retrievable. RRF covers both without scrolling payloads in Python.
 
 ---
 

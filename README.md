@@ -26,13 +26,13 @@ No separate collections, no cross-store joins. A single document (e.g. an image-
 
 Every query can be narrowed by `doc_type`, `machine_type`, `model_no`, `fault_code`, `severity`, or `part_no`. Filters are built with `FilterBuilder` against keyword-indexed fields. The `diagnose` endpoint uses this aggressively — e.g. it narrows part recommendations to only parts that fit the matched machine's model. See [`backend/app/db.py:_build_filter`](backend/app/db.py) and [`backend/app/services/search_service.py`](backend/app/services/search_service.py).
 
-### 3. Hybrid Fusion (RRF) — dense + sparse in one query
+### 3. Hybrid Fusion (RRF) — dense + identifier-native in one query
 
 Text search uses **reciprocal rank fusion** over:
 - `text_vec` dense ANN (top-50)
-- app-side BM25-style keyword scoring over filtered `text_content` payload (top-50)
+- a second Actian-native retrieval lane that re-runs ANN with exact metadata filters extracted from the query (`fault_code`, `model_no`, `part_no`)
 
-Merged with RRF (k=60), top-k returned. This matters for maintenance: the error code "E04" is a rare token dense models struggle with, while symptom phrases like "motor tripped on overload" are perfectly dense-retrievable. Hybrid covers both. See [`backend/app/db.py:search_hybrid`](backend/app/db.py).
+At ingest time, manuals, incidents, voice notes, and parts backfill those identifiers into indexed metadata fields. Merged with RRF (k=60), top-k returned. This matters for maintenance: the error code `E04` and identifiers like `CX-200` or `OL-E04-R` are promoted through exact Actian-side filters, while symptom phrases like "motor tripped on overload" are still captured by the dense branch. See [`backend/app/db.py:search_hybrid`](backend/app/db.py).
 
 ---
 
@@ -80,7 +80,7 @@ Every line traceable to a row in Actian. No hallucination surface.
           (cached locally, CPU)                                   collection: `incidents`
                                                                   named vectors: 3
                                                                   filters: 6 keyword fields
-                                                                  hybrid: RRF(ANN, BM25)
+                                                                  hybrid: RRF(ANN, identifier-filtered ANN)
 ```
 
 ### Stack
@@ -205,7 +205,7 @@ The Next.js UI is built around a single unified entry point — `POST /api/diagn
 | POST | `/api/ingest/image` | multipart: image + machine_type + optional fault_code/severity |
 | POST | `/api/ingest/voice` | multipart: WAV + machine_type |
 | POST | `/api/ingest/part` | JSON row |
-| POST | `/api/search/text` | JSON: `{query, filters?}` → RRF hybrid (dense ANN + app-side BM25) |
+| POST | `/api/search/text` | JSON: `{query, filters?}` → RRF hybrid (dense ANN + identifier-filtered ANN) |
 | POST | `/api/search/image` | multipart: image + filters → `image_vec` ANN |
 | POST | `/api/search/voice` | multipart: WAV + filters → `audio_text_vec` ANN fused with transcript hybrid |
 | POST | `/api/search/multimodal` | multipart: text + image + audio + filters → RRF across modalities |
