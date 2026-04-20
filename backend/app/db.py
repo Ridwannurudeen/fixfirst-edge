@@ -104,9 +104,9 @@ def search_hybrid(query_text: str, query_vec: np.ndarray, filters: dict | None, 
     init_collection()
     dense_hits = _search_vector("text_vec", query_vec, filters, 50)
     identifier_hits = _search_identifier_branch(query_text, query_vec, filters, 50)
-    rankings = [dense_hits]
+    rankings: list[tuple[float, list[dict]]] = [(1.0, dense_hits)]
     if identifier_hits:
-        rankings.append(identifier_hits)
+        rankings.append((2.0, identifier_hits))
     return _rrf_merge(rankings, k)
 
 
@@ -246,13 +246,15 @@ def _build_filter(filters: dict | None) -> Any:
 
 
 def _identifier_filters(identifiers: dict[str, str]) -> list[dict[str, str]]:
+    # Only emit filter branches specific enough to justify an RRF boost.
+    # Combined (>1 identifier) and fault_code-alone are high-signal; a bare
+    # model_no or part_no is too broad and would dilute the fused ranking.
     rankings: list[dict[str, str]] = []
     if len(identifiers) > 1:
         rankings.append(dict(identifiers))
-    for field_name in ("fault_code", "part_no", "model_no"):
-        value = identifiers.get(field_name)
-        if value:
-            rankings.append({field_name: value})
+    fault_code = identifiers.get("fault_code")
+    if fault_code:
+        rankings.append({"fault_code": fault_code})
     return rankings
 
 
@@ -278,13 +280,20 @@ def _to_hit(result: Any) -> dict[str, Any]:
     }
 
 
-def _rrf_merge(rankings: Iterable[list[dict]], k: int) -> list[dict]:
+def _rrf_merge(
+    rankings: Iterable[list[dict] | tuple[float, list[dict]]],
+    k: int,
+) -> list[dict]:
     scores: dict[str, float] = {}
     payloads: dict[str, dict[str, Any]] = {}
-    for ranking in rankings:
+    for entry in rankings:
+        if isinstance(entry, tuple):
+            weight, ranking = entry
+        else:
+            weight, ranking = 1.0, entry
         for index, item in enumerate(ranking, start=1):
             item_id = str(item["id"])
-            scores[item_id] = scores.get(item_id, 0.0) + 1.0 / (60 + index)
+            scores[item_id] = scores.get(item_id, 0.0) + weight / (60 + index)
             payloads[item_id] = item
     merged = [
         {"id": item_id, "score": score, "metadata": payloads[item_id]["metadata"]}
