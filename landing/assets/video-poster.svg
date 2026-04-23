@@ -1,0 +1,27 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="vp-grid" width="96" height="96" patternUnits="userSpaceOnUse">
+      <path d="M 96 0 L 0 0 0 96" fill="none" stroke="#FFFFFF" stroke-opacity="0.02" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="#09090B"/>
+  <rect width="1600" height="900" fill="url(#vp-grid)"/>
+
+  <g transform="translate(800, 400)">
+    <circle r="60" fill="#09090B" stroke="#52525B" stroke-width="1.5"/>
+    <path d="M -16 -22 L 22 0 L -16 22 Z" fill="#E4E4E7"/>
+  </g>
+
+  <g font-family="'Instrument Serif', serif" fill="#FAFAFA" text-anchor="middle">
+    <text x="800" y="560" font-size="44" font-style="italic">2-minute walkthrough</text>
+  </g>
+  <g font-family="Inter, sans-serif" fill="#71717A" text-anchor="middle">
+    <text x="800" y="606" font-size="18">Airplane mode, on. One laptop. One search bar.</text>
+  </g>
+
+  <g font-family="'JetBrains Mono', ui-monospace, monospace" fill="#52525B">
+    <text x="96" y="60" font-size="13">fixfirst-edge · walkthrough</text>
+    <text x="1504" y="60" font-size="13" text-anchor="end">offline</text>
+    <text x="800" y="820" font-size="13" text-anchor="middle">843ms p50 · 0 bytes egress · 9 vector ops per query</text>
+  </g>
+</svg>

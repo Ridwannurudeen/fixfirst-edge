@@ -1,40 +1,90 @@
-<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="96" height="96" patternUnits="userSpaceOnUse">
+      <path d="M 96 0 L 0 0 0 96" fill="none" stroke="#FFFFFF" stroke-opacity="0.022" stroke-width="1"/>
+    </pattern>
+  </defs>
+
   <rect width="1600" height="900" fill="#09090B"/>
-  <rect x="24" y="24" width="1552" height="852" rx="28" fill="#0F172A" stroke="#27272A" stroke-width="2"/>
-  <circle cx="132" cy="128" r="10" fill="#34D399"/>
-  <text x="156" y="136" fill="#F4F4F5" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700">FixFirst Edge</text>
-  <rect x="1112" y="86" width="332" height="56" rx="28" fill="#052E2B" stroke="#34D399" stroke-opacity="0.35"/>
-  <text x="1160" y="122" fill="#A7F3D0" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">OFFLINE — Ready locally</text>
+  <rect width="1600" height="900" fill="url(#grid)"/>
 
-  <text x="120" y="240" fill="#FAFAFA" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="800">Find the fix before</text>
-  <text x="120" y="326" fill="#34D399" font-family="Inter, Arial, sans-serif" font-size="76" font-weight="800">the line stops.</text>
-  <text x="120" y="388" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="28">
-    Offline multimodal maintenance copilot for industrial technicians.
-  </text>
-  <text x="120" y="430" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="28">
-    Photo, error code, voice note, or manual snippet — one query, auditable answer.
-  </text>
+  <!-- Header: wordmark + context pill -->
+  <g transform="translate(96, 80)">
+    <rect x="0" y="0" width="28" height="28" rx="6" fill="none" stroke="#52525B" stroke-width="1.5"/>
+    <text x="7" y="20" fill="#E4E4E7" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">FF</text>
+    <text x="48" y="20" fill="#F4F4F5" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="600">FixFirst Edge</text>
+  </g>
+  <g transform="translate(1344, 84)">
+    <text x="0" y="17" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500">Offline multimodal maintenance copilot</text>
+  </g>
 
-  <rect x="120" y="486" width="1360" height="300" rx="28" fill="#111827" stroke="#27272A" stroke-width="2"/>
-  <rect x="156" y="522" width="644" height="68" rx="18" fill="#09090B" stroke="#3F3F46" stroke-width="2"/>
-  <text x="192" y="566" fill="#E4E4E7" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="600">E04 motor overload on CX-200</text>
-  <rect x="820" y="522" width="280" height="68" rx="18" fill="#052E2B" stroke="#34D399" stroke-opacity="0.35"/>
-  <text x="902" y="566" fill="#A7F3D0" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">Run diagnosis</text>
+  <!-- Headline (Instrument Serif look) -->
+  <g font-family="'Instrument Serif', 'Iowan Old Style', 'Times New Roman', serif" font-weight="400" fill="#FAFAFA">
+    <text x="96"  y="300" font-size="84">It's <tspan fill="#A1A1AA" font-style="italic">2:47 AM.</tspan> A conveyor</text>
+    <text x="96"  y="392" font-size="84">has thrown E04 in a plant</text>
+    <text x="96"  y="484" font-size="84">with one bar of signal.</text>
+    <text x="96"  y="576" font-size="84">What the technician does</text>
+    <text x="96"  y="668" font-size="84"><tspan font-style="italic" fill="#A1A1AA">not</tspan> need is <tspan fill="#71717A">the cloud.</tspan></text>
+  </g>
 
-  <rect x="156" y="620" width="404" height="130" rx="22" fill="#0B1220" stroke="#27272A" stroke-width="2"/>
-  <text x="188" y="658" fill="#34D399" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Manual evidence</text>
-  <text x="188" y="696" fill="#F4F4F5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">conveyor_CX_200_service_manual.pdf</text>
-  <text x="188" y="730" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="20">p.3 — thermal overload relay reset + torque to 85 Nm</text>
+  <!-- Stat strip -->
+  <g transform="translate(96, 748)" font-family="'JetBrains Mono', ui-monospace, monospace">
+    <text x="0" y="0" fill="#F4F4F5" font-size="30" font-weight="600">843ms</text>
+    <text x="0" y="26" fill="#71717A" font-size="13">p50 query</text>
 
-  <rect x="598" y="620" width="404" height="130" rx="22" fill="#0B1220" stroke="#27272A" stroke-width="2"/>
-  <text x="630" y="658" fill="#34D399" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Similar incident</text>
-  <text x="630" y="696" fill="#F4F4F5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">inc-001 · downtime 45 min</text>
-  <text x="630" y="730" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="20">Replaced thermal overload relay and re-torqued mounts</text>
+    <text x="180" y="0" fill="#F4F4F5" font-size="30" font-weight="600">0 B</text>
+    <text x="180" y="26" fill="#71717A" font-size="13">egress</text>
 
-  <rect x="1040" y="620" width="404" height="130" rx="22" fill="#0B1220" stroke="#27272A" stroke-width="2"/>
-  <text x="1072" y="658" fill="#34D399" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Candidate part</text>
-  <text x="1072" y="696" fill="#F4F4F5" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">OL-E04-R · Thermal Overload Relay</text>
-  <text x="1072" y="730" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="20">Evidence-backed recommendation, no LLM hallucination layer</text>
+    <text x="320" y="0" fill="#F4F4F5" font-size="30" font-weight="600">3</text>
+    <text x="320" y="26" fill="#71717A" font-size="13">vectors/doc</text>
 
-  <text x="120" y="828" fill="#71717A" font-family="Inter, Arial, sans-serif" font-size="22">Actian VectorAI DB · Named vectors · Filtered search · Hybrid RRF</text>
+    <text x="460" y="0" fill="#F4F4F5" font-size="30" font-weight="600">MIT</text>
+    <text x="460" y="26" fill="#71717A" font-size="13">license</text>
+  </g>
+
+  <!-- Footer attribution -->
+  <g transform="translate(96, 848)" font-family="Inter, Arial, sans-serif">
+    <text x="0" y="0" fill="#52525B" font-size="13">Built on Actian VectorAI DB · Named vectors · Filtered search · Hybrid RRF</text>
+  </g>
+  <g transform="translate(1400, 848)" font-family="Inter, Arial, sans-serif">
+    <text x="0" y="0" fill="#52525B" font-size="13" text-anchor="start">edge.gudman.xyz</text>
+  </g>
+
+  <!-- Right rail: trace panel mock -->
+  <g transform="translate(1072, 180)">
+    <rect x="0" y="0" width="432" height="520" rx="12" fill="#0A0A0B" stroke="#27272A" stroke-width="1"/>
+    <rect x="0" y="0" width="432" height="44" rx="12" fill="#18181B"/>
+    <rect x="0" y="32" width="432" height="12" fill="#18181B"/>
+    <text x="20" y="28" fill="#A1A1AA" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="12">retrieval trace</text>
+    <text x="396" y="28" fill="#71717A" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" text-anchor="end">offline</text>
+
+    <g font-family="'JetBrains Mono', ui-monospace, monospace" font-size="13">
+      <text x="20" y="82"  fill="#A1A1AA">tokenize   → <tspan fill="#E4E4E7">[e04, motor, overload]</tspan></text>
+      <text x="20" y="112" fill="#A1A1AA">identify   → <tspan fill="#E4E4E7">codes:[E04] models:[—]</tspan></text>
+      <text x="20" y="142" fill="#A1A1AA">scan       → <tspan fill="#E4E4E7">68 docs</tspan></text>
+      <text x="20" y="172" fill="#A1A1AA">rank       → <tspan fill="#E4E4E7">inc:4 part:1 code:1</tspan></text>
+      <text x="20" y="202" fill="#F4F4F5">latency    → <tspan fill="#F4F4F5">9.3ms</tspan> <tspan fill="#52525B">(browser)</tspan></text>
+      <text x="20" y="232" fill="#F4F4F5">egress     → <tspan fill="#F4F4F5">0 B</tspan></text>
+    </g>
+
+    <line x1="20" y1="258" x2="412" y2="258" stroke="#27272A" stroke-width="1"/>
+
+    <!-- Evidence card -->
+    <g transform="translate(20, 280)">
+      <text x="0" y="0" fill="#71717A" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500" letter-spacing="1.5">MANUAL SECTION</text>
+      <text x="0" y="26" fill="#FAFAFA" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="600">CX-200 Service Manual · §4.7 · p.47</text>
+      <text x="0" y="52" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="13">Thermal overload relay trips when drive</text>
+      <text x="0" y="72" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="13">motor sustains over-current. Reset OL-E04-R</text>
+      <text x="0" y="92" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="13">and verify belt tension before re-energising.</text>
+    </g>
+
+    <line x1="20" y1="400" x2="412" y2="400" stroke="#27272A" stroke-width="1"/>
+
+    <g transform="translate(20, 422)">
+      <text x="0" y="0" fill="#71717A" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="500" letter-spacing="1.5">CANDIDATE PART</text>
+      <text x="0" y="26" fill="#FAFAFA" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="600">OL-E04-R — Thermal Overload Relay</text>
+      <text x="0" y="52" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="13">Fits Conveyor CX-200 drive motor circuit.</text>
+      <text x="0" y="72" fill="#A1A1AA" font-family="Inter, Arial, sans-serif" font-size="13">Referenced by 3 incidents in corpus.</text>
+    </g>
+  </g>
 </svg>

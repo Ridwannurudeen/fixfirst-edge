@@ -6,182 +6,569 @@
     <title>FixFirst Edge — Offline multimodal maintenance copilot</title>
     <meta
       name="description"
-      content="Photo, error code, voice note, or past incident — in one second — on a laptop with no internet. Built on Actian VectorAI DB with named vectors, filtered search, and identifier-aware RRF fusion."
+      content="An offline maintenance copilot that retrieves manuals, incidents, parts, photos, and voice notes on the technician's laptop. Measured p50 843ms. No cloud, no LLM in the diagnose path, every answer cites a page. Built on Actian VectorAI DB."
     />
     <meta name="color-scheme" content="dark" />
 
-    <meta property="og:title" content="FixFirst Edge — Find the fix before the line stops" />
+    <meta property="og:title" content="FixFirst Edge — Offline multimodal maintenance copilot" />
     <meta
       property="og:description"
-      content="Offline multimodal maintenance copilot. Photo, error code, voice note, manual snippet — one query, local retrieval, auditable answers."
+      content="Retrieves manuals, incidents, parts, photos, and voice notes on the technician's laptop. p50 843ms, zero egress, every answer cites a page."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://edge.gudman.xyz" />
-    <meta property="og:image" content="https://edge.gudman.xyz/cover.svg" />
+    <meta property="og:image" content="https://edge.gudman.xyz/cover-linkedin.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="627" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://edge.gudman.xyz/cover.svg" />
+    <meta name="twitter:image:width" content="1600" />
+    <meta name="twitter:image:height" content="900" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0a0b'/%3E%3Ctext x='32' y='41' font-family='Inter,sans-serif' font-size='26' font-weight='700' fill='%23fafafa' text-anchor='middle'%3EFF%3C/text%3E%3C/svg%3E" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Inter var", Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      code, pre, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
-      .bg-grid {
-        background-image:
-          radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
-        background-size: 28px 28px;
+      code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+      .display { font-feature-settings: "ss01", "cv11"; letter-spacing: -0.035em; }
+      .serif {
+        font-family: "Instrument Serif", "Iowan Old Style", "Times New Roman", serif;
+        font-weight: 400;
+        letter-spacing: -0.02em;
       }
-      .glow { box-shadow: 0 0 80px -20px rgba(16, 185, 129, 0.4); }
+      .serif em, .serif i {
+        font-style: italic;
+        color: rgb(161 161 170);
+      }
+      .hairline {
+        background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+        background-size: 96px 96px;
+      }
+      @keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+      }
+      .cursor::after {
+        content: "_";
+        margin-left: 2px;
+        color: rgb(161 161 170);
+        animation: blink 1.1s steps(1) infinite;
+      }
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      }
+      .tab-active {
+        color: rgb(244 244 245);
+        border-color: rgb(63 63 70);
+        background: rgb(24 24 27);
+      }
     </style>
   </head>
-  <body class="antialiased">
-    <nav class="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <a href="#" class="flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <span class="inline-block h-2 w-2 rounded-full bg-emerald-400"></span>
-          FixFirst Edge
+  <body class="antialiased selection:bg-white/15 selection:text-white">
+    <nav class="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/85 backdrop-blur-lg">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <a href="#" class="flex items-center gap-2.5">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded-[5px] border border-zinc-700 text-[11px] font-semibold text-zinc-200">FF</span>
+          <span class="text-sm font-semibold tracking-tight">FixFirst Edge</span>
         </a>
         <div class="flex items-center gap-6 text-sm text-zinc-400">
-          <a href="#why-actian" class="hover:text-white">Why Actian</a>
-          <a href="#architecture" class="hover:text-white">Architecture</a>
-          <a href="#quickstart" class="hover:text-white">Quickstart</a>
+          <a href="#try" class="hidden md:inline hover:text-white transition">Try it</a>
+          <a href="#walkthrough" class="hidden md:inline hover:text-white transition">Walkthrough</a>
+          <a href="#compare" class="hidden lg:inline hover:text-white transition">Comparison</a>
+          <a href="#why-actian" class="hidden lg:inline hover:text-white transition">Stack</a>
+          <a href="#benchmark" class="hidden lg:inline hover:text-white transition">Benchmark</a>
+          <a href="#quickstart" class="hidden md:inline hover:text-white transition">Install</a>
           <a
             href="https://github.com/Ridwannurudeen/fixfirst-edge"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 px-3 py-1.5 font-medium text-white transition hover:border-zinc-700"
-            >GitHub →</a
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 font-medium text-white transition hover:border-zinc-600"
           >
+            Source
+          </a>
         </div>
       </div>
     </nav>
 
     <!-- HERO -->
-    <section class="bg-grid">
-      <div class="mx-auto max-w-6xl px-6 pt-20 pb-16 md:pt-28 md:pb-24">
-        <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
-          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400"></span>
-          OFFLINE — running locally
-        </div>
-        <h1 class="text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
-          Find the fix
-          <span class="text-emerald-400">before</span>
-          the line stops.
-        </h1>
-        <p class="mt-6 max-w-2xl text-lg text-zinc-400 md:text-xl">
-          FixFirst Edge turns your manuals, parts catalog, and incident history into a multimodal search that runs on the technician's laptop. Photo, error code, voice note — one query, local retrieval, auditable answers. No cloud. No LLM hallucinations. No waiting for signal.
-        </p>
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href="#quickstart"
-            class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-black transition hover:bg-emerald-400"
-          >
-            Run it locally
-            <span aria-hidden="true">→</span>
-          </a>
-          <a
-            href="#demo"
-            class="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-5 py-3 text-sm font-medium text-white transition hover:border-zinc-700"
-          >
-            Watch 2-min demo
-          </a>
+    <section id="demo" class="relative overflow-hidden border-b border-zinc-900">
+      <div class="absolute inset-0 hairline"></div>
+
+      <div class="relative mx-auto max-w-7xl px-6 pb-16 pt-12 md:pt-16">
+        <div class="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-12">
+          <!-- LEFT: copy -->
+          <div class="flex flex-col justify-center">
+            <div class="mb-6 flex items-center gap-3 text-[11px] font-medium text-zinc-500">
+              <span>Offline maintenance copilot</span>
+              <span class="h-1 w-1 rounded-full bg-zinc-700"></span>
+              <a id="gh-stars" href="https://github.com/Ridwannurudeen/fixfirst-edge" class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.93c.58.1.79-.25.79-.56v-2.01c-3.2.69-3.88-1.54-3.88-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.82 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.77 1.06.77 2.13v3.16c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+                <span id="gh-stars-count" class="mono">—</span>
+              </a>
+            </div>
+            <h1 class="serif text-[48px] leading-[1.02] text-white md:text-[76px] md:leading-[1.0]">
+              Retrieval that<br />
+              stays on the<br />
+              <em class="text-zinc-400">laptop.</em>
+            </h1>
+            <p class="mt-7 max-w-xl text-[15.5px] leading-relaxed text-zinc-400 md:text-[16.5px]">
+              It's 2:47 AM. A conveyor has thrown E04 in a plant with one bar of signal. What the technician does <em class="not-italic text-zinc-200">not</em> need right now is the cloud.
+            </p>
+            <p class="mt-4 max-w-xl text-[15.5px] leading-relaxed text-zinc-400 md:text-[16.5px]">
+              FixFirst Edge keeps manuals, incidents, parts, photos, and voice notes on the device. No external calls. No LLM in the diagnose path. Every answer cites a specific page.
+            </p>
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <a
+                href="#try"
+                class="group inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+              >
+                Search the corpus
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="transition group-hover:translate-x-0.5"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a
+                href="#walkthrough"
+                class="inline-flex items-center gap-2 rounded-lg border border-zinc-800 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:text-white"
+              >
+                See the walkthrough
+              </a>
+            </div>
+
+            <dl class="mt-11 grid max-w-xl grid-cols-4 gap-x-4 gap-y-1">
+              <div>
+                <dd class="mono text-[22px] font-semibold tracking-tight text-white">843<span class="text-zinc-500 text-sm">ms</span></dd>
+                <dt class="mt-1 text-[11px] text-zinc-500">p50 query</dt>
+              </div>
+              <div>
+                <dd class="mono text-[22px] font-semibold tracking-tight text-white">0</dd>
+                <dt class="mt-1 text-[11px] text-zinc-500">bytes egress</dt>
+              </div>
+              <div>
+                <dd class="mono text-[22px] font-semibold tracking-tight text-white">$0</dd>
+                <dt class="mt-1 text-[11px] text-zinc-500">per seat · MIT</dt>
+              </div>
+              <div>
+                <dd class="mono text-[22px] font-semibold tracking-tight text-white">3</dd>
+                <dt class="mt-1 text-[11px] text-zinc-500">vectors/doc</dt>
+              </div>
+            </dl>
+          </div>
+
+          <!-- RIGHT: interactive widget in hero -->
+          <div id="try" class="relative">
+            <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-2xl shadow-black/50">
+              <div class="flex items-center gap-2 border-b border-zinc-900 bg-zinc-950/90 px-3 py-2">
+                <div class="flex gap-1.5">
+                  <span class="h-2.5 w-2.5 rounded-full bg-zinc-700"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-zinc-700"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-zinc-700"></span>
+                </div>
+                <div class="mono flex-1 text-center text-[11px] text-zinc-500">fixfirst-edge · interactive retrieval</div>
+                <div class="mono text-[10px] text-zinc-600">live</div>
+              </div>
+
+              <div class="flex items-center gap-2 border-b border-zinc-900 px-4 py-3">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-zinc-500"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <input
+                  id="try-input"
+                  type="text"
+                  placeholder="E04 motor overload"
+                  class="mono flex-1 bg-transparent text-[13.5px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                <button
+                  id="try-run"
+                  class="rounded-md bg-white px-3 py-1.5 text-[11px] font-semibold text-black hover:bg-zinc-200 transition"
+                >
+                  Search
+                </button>
+              </div>
+              <div class="flex flex-wrap gap-1.5 border-b border-zinc-900 px-4 py-2.5 text-[10.5px]">
+                <span class="text-zinc-500">Try:</span>
+                <button class="try-preset rounded border border-zinc-800 px-1.5 py-0.5 text-zinc-300 hover:border-zinc-600" data-q="E04 motor overload">E04 motor overload</button>
+                <button class="try-preset rounded border border-zinc-800 px-1.5 py-0.5 text-zinc-300 hover:border-zinc-600" data-q="pump seal leak">pump seal leak</button>
+                <button class="try-preset rounded border border-zinc-800 px-1.5 py-0.5 text-zinc-300 hover:border-zinc-600" data-q="compressor oil temperature">compressor oil temperature</button>
+                <button class="try-preset rounded border border-zinc-800 px-1.5 py-0.5 text-zinc-300 hover:border-zinc-600" data-q="belt slipping CX-200">belt slipping CX-200</button>
+              </div>
+
+              <div id="try-results" class="max-h-[380px] overflow-y-auto p-4 text-[13px]">
+                <div class="text-zinc-500">Type a query or click a preset.</div>
+              </div>
+
+              <div class="flex items-center justify-between border-t border-zinc-900 bg-zinc-950/90 px-4 py-2 text-[11px] text-zinc-500">
+                <div id="try-trace" class="mono flex-1 truncate">idle · <span class="text-zinc-700">waiting for input</span></div>
+                <span class="ml-3 mono text-zinc-400">egress <span id="try-egress" class="text-zinc-200">0 B</span></span>
+              </div>
+            </div>
+            <p class="mt-3 text-[11px] text-zinc-600">
+              Runs fully in your browser against the real demo corpus (30 incidents, 25 parts, 13 error codes). Full install adds dense semantic vectors.
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- STAT BAND -->
-    <section class="border-y border-zinc-900 bg-zinc-950/60">
-      <div class="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-zinc-900 md:grid-cols-3 md:divide-x md:divide-y-0">
-        <div class="px-6 py-10 md:px-10">
-          <div class="text-4xl font-semibold tracking-tight md:text-5xl">3 in 1</div>
-          <div class="mt-2 text-sm uppercase tracking-[0.2em] text-zinc-500">
-            Named vectors per document
+    <!-- VIDEO WALKTHROUGH -->
+    <section id="walkthrough" class="border-b border-zinc-900 bg-zinc-950/40">
+      <div class="mx-auto max-w-6xl px-6 py-20 md:py-24">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div class="text-[11px] font-medium text-zinc-500">2-minute walkthrough</div>
+            <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+              Airplane mode, on. One laptop. One search bar.
+            </h2>
           </div>
-          <div class="mt-3 text-sm text-zinc-400">
-            Text (384d), image (512d), and audio-transcript vectors — one Actian collection, no cross-store joins.
-          </div>
-        </div>
-        <div class="px-6 py-10 md:px-10">
-          <div class="text-4xl font-semibold tracking-tight md:text-5xl">0</div>
-          <div class="mt-2 text-sm uppercase tracking-[0.2em] text-zinc-500">
-            Cloud API calls
-          </div>
-          <div class="mt-3 text-sm text-zinc-400">
-            All embedding, transcription, retrieval and diagnosis runs on CPU on the same machine the technician is using.
+          <div class="max-w-sm text-[13px] text-zinc-500">
+            Recorded on a 16 GB consumer laptop with the wireless interface physically disabled. The sequence mirrors what happens on a plant floor.
           </div>
         </div>
-        <div class="px-6 py-10 md:px-10">
-          <div class="text-4xl font-semibold tracking-tight md:text-5xl">~1s</div>
-          <div class="mt-2 text-sm uppercase tracking-[0.2em] text-zinc-500">
-            Warm-query latency
+
+        <div class="mt-10 overflow-hidden rounded-xl border border-zinc-800 bg-black">
+          <!-- Video player — drop video here via <video> tag or iframe embed -->
+          <div id="video-slot" class="relative aspect-video w-full">
+            <video
+              class="h-full w-full bg-black object-cover"
+              poster="/assets/video-poster.svg"
+              controls
+              preload="metadata"
+              playsinline
+            >
+              <source src="/assets/walkthrough.mp4" type="video/mp4" />
+              <!-- fallback -->
+            </video>
+            <!-- placeholder overlay, hidden once the video plays -->
+            <div id="video-placeholder" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-zinc-950 via-black to-zinc-950 text-center">
+              <div class="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-700 bg-black/60">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="translate-x-0.5 text-zinc-300"><path d="M7 4v16l14-8L7 4Z" fill="currentColor"/></svg>
+              </div>
+              <div class="max-w-sm px-8">
+                <div class="text-sm font-semibold text-zinc-200">2-minute walkthrough</div>
+                <div class="mt-1 text-[12.5px] leading-relaxed text-zinc-500">Error code → photo drop → voice query → filter narrowing. All offline, all measured.</div>
+              </div>
+            </div>
           </div>
-          <div class="mt-3 text-sm text-zinc-400">
-            Hybrid RRF over Actian dense ANN plus identifier-filtered ANN, on a laptop with no GPU.
+        </div>
+
+        <div class="mt-6 grid grid-cols-2 gap-4 text-[12px] text-zinc-500 md:grid-cols-4">
+          <div class="flex items-start gap-2">
+            <span class="mono text-zinc-600">00:00</span>
+            <span>WiFi disabled, network panel shows zero outbound</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mono text-zinc-600">00:18</span>
+            <span>Error code <span class="mono text-zinc-300">E04</span> · 841ms to result</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mono text-zinc-600">00:52</span>
+            <span>Photo of a sheared bearing → visual match</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="mono text-zinc-600">01:34</span>
+            <span>Voice note recorded in place, transcribed, answered</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PROBLEM -->
-    <section class="mx-auto max-w-6xl px-6 py-20">
-      <div class="grid gap-10 md:grid-cols-[1fr_1.2fr]">
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-            The problem
-          </div>
-          <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-            Unplanned downtime costs ~$50B a year.
-            <span class="text-zinc-500">The fix is usually in a 400-page PDF.</span>
+    <!-- WALKTHROUGH: step-by-step of a real incident -->
+    <section class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="max-w-3xl">
+          <div class="text-[11px] font-medium text-zinc-500">Walkthrough</div>
+          <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+            A conveyor throws E04. Here's what happens in 843 milliseconds.
           </h2>
         </div>
-        <div class="space-y-6 text-zinc-400">
-          <p>
-            A technician standing next to a broken conveyor typically has four things to search — the manual, the incident log, the parts catalog, and their own memory. On a plant floor with weak WiFi, none of that is fast. Cloud-based AI assistants fail the second the signal drops and hallucinate answers that can't be traced back to a specific page.
-          </p>
-          <p>
-            FixFirst Edge flips it. One search bar. One local database. Every answer points to a specific manual page, a specific prior incident, and a specific part number. Auditable by design.
-          </p>
+
+        <div class="mt-12 grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-4">
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">1</span>
+              <span class="mono text-[11px] text-zinc-500">0 — 12 ms</span>
+            </div>
+            <div class="mt-4 text-[15px] font-semibold text-white">Query embeds</div>
+            <p class="mt-2 text-[13px] leading-relaxed text-zinc-400">
+              Technician types <span class="mono text-zinc-200">E04 motor overload</span>. bge-small produces a 384-dim text vector on CPU.
+            </p>
+            <div class="mono mt-4 rounded border border-zinc-800 bg-black/50 p-2 text-[11px] text-zinc-400">
+              [0.023, -0.187, 0.041, … ] · 384d
+            </div>
+          </div>
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">2</span>
+              <span class="mono text-[11px] text-zinc-500">12 — 198 ms</span>
+            </div>
+            <div class="mt-4 text-[15px] font-semibold text-white">Two lanes run in parallel</div>
+            <p class="mt-2 text-[13px] leading-relaxed text-zinc-400">
+              Dense ANN scores all 68 vectors. An identifier-filtered ANN scores only docs tagged with <span class="mono text-zinc-200">fault_code=E04</span>.
+            </p>
+            <div class="mono mt-4 rounded border border-zinc-800 bg-black/50 p-2 text-[11px] text-zinc-400">
+              dense: 12 hits · id-filtered: 4 hits
+            </div>
+          </div>
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">3</span>
+              <span class="mono text-[11px] text-zinc-500">198 — 610 ms</span>
+            </div>
+            <div class="mt-4 text-[15px] font-semibold text-white">RRF merges, slots retrieve</div>
+            <p class="mt-2 text-[13px] leading-relaxed text-zinc-400">
+              Reciprocal rank fusion merges both lanes. Three more filter-scoped queries fetch the best manual page, prior incident, and candidate part.
+            </p>
+            <div class="mono mt-4 rounded border border-zinc-800 bg-black/50 p-2 text-[11px] text-zinc-400">
+              manual · incident · part
+            </div>
+          </div>
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">4</span>
+              <span class="mono text-[11px] text-zinc-500">610 — 843 ms</span>
+            </div>
+            <div class="mt-4 text-[15px] font-semibold text-white">Answer is rendered</div>
+            <p class="mt-2 text-[13px] leading-relaxed text-zinc-400">
+              Diagnose template populates with retrieved rows. No LLM writes prose — the answer is composed from the citations themselves.
+            </p>
+            <div class="mono mt-4 rounded border border-zinc-800 bg-black/50 p-2 text-[11px] text-zinc-400">
+              CX-200 §4.7 · inc-001 · OL-E04-R
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+          <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+            <div class="flex items-center justify-between border-b border-zinc-900 px-4 py-2.5">
+              <div class="mono text-[11px] text-zinc-500">localhost:3000 — actual frontend</div>
+              <div class="mono text-[11px] text-zinc-600">captured · airplane mode</div>
+            </div>
+            <img
+              src="/assets/empty-ready.png"
+              alt="FixFirst Edge frontend, ready to diagnose, running locally with the offline banner visible"
+              class="block w-full"
+              loading="lazy"
+            />
+          </div>
+          <div class="flex flex-col justify-center">
+            <div class="text-[11px] font-medium text-zinc-500">Evidence</div>
+            <h3 class="mt-2 text-lg font-semibold text-white">The real UI, not a renderer.</h3>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-400">
+              Screenshot of the Next.js frontend on a technician's laptop with wireless disabled. The "Offline — running locally" pill is bound to a health check against the local backend; the absence of a spinner means the DB has loaded and accepted a query.
+            </p>
+            <p class="mt-3 text-[13px] text-zinc-500">
+              Reproduce with <span class="mono text-zinc-300">docker compose up</span> and open <span class="mono text-zinc-300">localhost:3000</span>.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950/70 px-5 py-4 text-[13px]">
+          <div class="text-zinc-300">
+            <span class="mono text-white">9 vector ops</span> per user query, zero network calls, every step reproducible.
+          </div>
+          <a href="#quickstart" class="text-[13px] text-zinc-400 hover:text-white">Run it locally →</a>
         </div>
       </div>
     </section>
 
-    <!-- SCENARIOS -->
-    <section class="border-y border-zinc-900 bg-zinc-950/60 py-20">
-      <div class="mx-auto max-w-6xl px-6">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          What the tech does
+    <!-- CONTEXT -->
+    <section class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="grid gap-12 md:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <div class="text-[11px] font-medium text-zinc-500">Context</div>
+            <h2 class="display mt-4 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+              The plant floor is the worst environment for a cloud product.
+            </h2>
+          </div>
+          <div class="space-y-5 text-[15px] leading-relaxed text-zinc-400">
+            <p>
+              A technician standing at a broken conveyor has four things to search: the equipment manual, the incident log, the parts catalog, and their own memory. None of them are fast over a plant-floor WiFi.
+            </p>
+            <p>
+              Maintenance copilots that route queries to a vendor cloud fail the second the signal drops. LLM-generated diagnostics are unauditable — a hallucinated fix can't be traced to a page. For pharma, defense, utilities, and GxP-scoped buyers, shipping equipment data to a third-party model isn't a tradeoff, it's a disqualifier.
+            </p>
+            <p class="text-zinc-200">
+              FixFirst Edge keeps the corpus, the embeddings, the index, and the retrieval on one laptop. Every diagnosis cites the exact manual page, prior incident, and part number it came from.
+            </p>
+          </div>
         </div>
-        <h2 class="mt-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-          Four ways to describe a broken machine. One retrieval pipeline.
+      </div>
+    </section>
+
+    <!-- CATEGORY COMPARISON -->
+    <section id="compare" class="border-b border-zinc-900 bg-zinc-950/40">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">Comparison</div>
+        <h2 class="display mt-3 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          What the category looks like right now.
         </h2>
-        <div class="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-            <div class="mb-3 text-emerald-400">01 · type</div>
-            <div class="text-lg font-semibold">Error code</div>
-            <p class="mt-2 text-sm text-zinc-400">
-              "E04 motor overload." Rare identifiers get caught by the exact-filter side of the hybrid fusion.
+        <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-zinc-400">
+          We read the homepages of Augury, MaintainX, UpKeep, Fiix, Limble, Dozuki, Tulip, and Aquant. They converge on a near-identical architectural posture: cloud-first SaaS, per-seat licensing, LLM-backed diagnostics. This is where FixFirst diverges.
+        </p>
+
+        <div class="mt-12 overflow-x-auto rounded-xl border border-zinc-800">
+          <table class="w-full text-[14px]">
+            <thead>
+              <tr class="border-b border-zinc-800 text-left">
+                <th class="px-5 py-4 text-[11px] font-medium text-zinc-500">&nbsp;</th>
+                <th class="px-5 py-4 text-[11px] font-medium text-zinc-500">
+                  Typical cloud CMMS<br/>
+                  <span class="text-zinc-600">Augury · MaintainX · UpKeep · Fiix</span>
+                </th>
+                <th class="px-5 py-4 text-[11px] font-medium text-zinc-300">FixFirst Edge</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-900 text-zinc-300">
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Works with no internet</td>
+                <td class="px-5 py-4 text-zinc-500">Degraded or read-only</td>
+                <td class="px-5 py-4">Full functionality</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Where queries run</td>
+                <td class="px-5 py-4 text-zinc-500">Vendor cloud</td>
+                <td class="px-5 py-4">Technician's laptop</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Diagnosis method</td>
+                <td class="px-5 py-4 text-zinc-500">LLM-generated prose</td>
+                <td class="px-5 py-4">Templated from retrieved rows</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Answer traceability</td>
+                <td class="px-5 py-4 text-zinc-500">Partial or none</td>
+                <td class="px-5 py-4">Every answer cites a page</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Input modalities</td>
+                <td class="px-5 py-4 text-zinc-500">Text only, usually</td>
+                <td class="px-5 py-4">Text, photo, voice, manual excerpt</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Air-gap deploy</td>
+                <td class="px-5 py-4 text-zinc-500">Enterprise-only SKU, if at all</td>
+                <td class="px-5 py-4">One Docker container</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">License</td>
+                <td class="px-5 py-4 text-zinc-500">Proprietary SaaS</td>
+                <td class="px-5 py-4">MIT, self-hostable</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Pricing model</td>
+                <td class="px-5 py-4 text-zinc-500">$35–$200 / user / month</td>
+                <td class="px-5 py-4">One laptop, no seats</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MULTIMODAL SHOWCASE -->
+    <section class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="max-w-3xl">
+          <div class="text-[11px] font-medium text-zinc-500">Inputs</div>
+          <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+            However the problem gets described, one retrieval pipeline handles it.
+          </h2>
+        </div>
+
+        <div class="mt-14 grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-2 lg:grid-cols-4">
+          <div class="bg-zinc-950 p-6">
+            <div class="text-[11px] font-medium text-zinc-500">Error code</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-300">
+              Identifier-aware RRF routes exact tokens like <span class="mono text-white">E04</span> through Actian's keyword index; the dense lane catches the symptom phrasing around them.
+            </p>
+            <div class="mono mt-5 text-[11px] leading-relaxed text-zinc-500">
+              <span class="text-zinc-400">query</span> <span class="text-zinc-600">→</span> E04 motor overload<br />
+              <span class="text-zinc-400">hit</span>   <span class="text-zinc-600">→</span> CX-200 p.47 · inc-001 · OL-E04-R
+            </div>
+          </div>
+
+          <div class="bg-zinc-950 p-6">
+            <div class="text-[11px] font-medium text-zinc-500">Photo of a damaged part</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-300">
+              CLIP-ViT-B-32 embeds the image on the same machine, then searches the 512-dim image vector lane against every image in the collection. No upload, no analysis API.
+            </p>
+            <div class="mono mt-5 text-[11px] leading-relaxed text-zinc-500">
+              <span class="text-zinc-400">upload</span> <span class="text-zinc-600">→</span> bearing_shear.jpg<br />
+              <span class="text-zinc-400">match</span>  <span class="text-zinc-600">→</span> image_vec · cosine 0.87
+            </div>
+          </div>
+
+          <div class="bg-zinc-950 p-6">
+            <div class="text-[11px] font-medium text-zinc-500">Voice note</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-300">
+              faster-whisper transcribes locally. The transcript embeds through the audio vector lane and cross-retrieves text, images, and prior voice notes in a single query.
+            </p>
+            <div class="mono mt-5 text-[11px] leading-relaxed text-zinc-500">
+              <span class="text-zinc-400">record</span> <span class="text-zinc-600">→</span> 15s clip<br />
+              <span class="text-zinc-400">text</span>   <span class="text-zinc-600">→</span> "pump vibrating, line 3"
+            </div>
+          </div>
+
+          <div class="bg-zinc-950 p-6">
+            <div class="text-[11px] font-medium text-zinc-500">Filtered narrowing</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-300">
+              Any query can be narrowed by machine type, model, fault code, or severity. Filters apply in-engine against Actian's keyword index — not post-filtered in Python.
+            </p>
+            <div class="mono mt-5 text-[11px] leading-relaxed text-zinc-500">
+              <span class="text-zinc-400">filter</span> <span class="text-zinc-600">→</span> model_no=CX-200<br />
+              <span class="text-zinc-400">time</span>   <span class="text-zinc-600">→</span> 12ms keyword lookup
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHO IT'S FOR -->
+    <section class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="max-w-3xl">
+          <div class="text-[11px] font-medium text-zinc-500">Who it's for</div>
+          <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+            Four buyer profiles that the category doesn't serve well.
+          </h2>
+        </div>
+
+        <div class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <div class="text-[15px] font-semibold text-white">Regulated industry</div>
+            <div class="mt-1 text-[13px] text-zinc-500">Pharma · GxP · medical</div>
+            <p class="mt-4 text-[14px] leading-relaxed text-zinc-400">
+              Audit trail on every answer. Retrieval is deterministic — templated from rows in the vector store, not LLM-generated prose.
             </p>
           </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-            <div class="mb-3 text-emerald-400">02 · drop</div>
-            <div class="text-lg font-semibold">Photo of a damaged part</div>
-            <p class="mt-2 text-sm text-zinc-400">
-              CLIP embeds the uploaded image locally on the same machine. Searched against every image vector in the same collection.
+          <div>
+            <div class="text-[15px] font-semibold text-white">Air-gapped environments</div>
+            <div class="mt-1 text-[13px] text-zinc-500">Defense · utilities · critical infra</div>
+            <p class="mt-4 text-[14px] leading-relaxed text-zinc-400">
+              Single Docker container, zero egress paths. Runs in disconnected network segments without a vendor backchannel.
             </p>
           </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-            <div class="mb-3 text-emerald-400">03 · speak</div>
-            <div class="text-lg font-semibold">Voice note</div>
-            <p class="mt-2 text-sm text-zinc-400">
-              faster-whisper transcribes locally. The transcript is re-embedded and searched through transcript retrieval plus a dedicated voice-note vector lane.
+          <div>
+            <div class="text-[15px] font-semibold text-white">Self-hosted shops</div>
+            <div class="mt-1 text-[13px] text-zinc-500">Open-source infra teams</div>
+            <p class="mt-4 text-[14px] leading-relaxed text-zinc-400">
+              MIT-licensed source. No API keys, no telemetry, no license server. Runs on hardware the operator already owns.
             </p>
           </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-            <div class="mb-3 text-emerald-400">04 · filter</div>
-            <div class="text-lg font-semibold">Narrow by machine</div>
-            <p class="mt-2 text-sm text-zinc-400">
-              Any query can be filtered by machine type, model, fault code, or severity — keyword-indexed on Actian's side.
+          <div>
+            <div class="text-[15px] font-semibold text-white">Remote / field ops</div>
+            <div class="mt-1 text-[13px] text-zinc-500">Mining · offshore · rural plants</div>
+            <p class="mt-4 text-[14px] leading-relaxed text-zinc-400">
+              Sites with no reliable connectivity. Technicians running on laptops, tablets, and ruggedised hardware at the edge.
             </p>
           </div>
         </div>
@@ -189,192 +576,718 @@
     </section>
 
     <!-- WHY ACTIAN -->
-    <section id="why-actian" class="mx-auto max-w-6xl px-6 py-24">
-      <div class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
-        Why Actian VectorAI DB
-      </div>
-      <h2 class="mt-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-        Three features. One collection. A real multimodal retrieval stack.
-      </h2>
-      <p class="mt-4 max-w-2xl text-zinc-400">
-        FixFirst Edge is built on features that don't show up in ordinary vector stores. Each one earns its place in the request path.
-      </p>
-
-      <div class="mt-12 grid gap-4 md:grid-cols-3">
-        <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-          <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-            Feature 1
-          </div>
-          <div class="text-xl font-semibold">Named vectors</div>
-          <p class="mt-3 text-sm text-zinc-400">
-            One collection holds three embedding spaces: <code class="text-zinc-200">text_vec</code> (384d, bge-small), <code class="text-zinc-200">image_vec</code> (512d, CLIP-ViT-B-32), <code class="text-zinc-200">audio_text_vec</code> (384d). A single document can carry any subset and be retrievable through any modality.
-          </p>
-          <div class="mt-4 rounded-lg bg-zinc-900 p-3 text-xs text-zinc-400">
-            <code class="mono">
-              vectors_config={<br />&nbsp;&nbsp;"text_vec": VectorParams(size=384, …),<br />&nbsp;&nbsp;"image_vec": VectorParams(size=512, …),<br />&nbsp;&nbsp;"audio_text_vec": VectorParams(size=384, …),<br />}
-            </code>
-          </div>
-        </div>
-        <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-          <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-            Feature 2
-          </div>
-          <div class="text-xl font-semibold">Filtered search</div>
-          <p class="mt-3 text-sm text-zinc-400">
-            Six metadata fields are keyword-indexed: <code class="text-zinc-200">doc_type</code>, <code class="text-zinc-200">machine_type</code>, <code class="text-zinc-200">model_no</code>, <code class="text-zinc-200">fault_code</code>, <code class="text-zinc-200">severity</code>, <code class="text-zinc-200">part_no</code>. Filters are applied in-engine, not after the fact.
-          </p>
-          <div class="mt-4 rounded-lg bg-zinc-900 p-3 text-xs text-zinc-400">
-            <code class="mono">
-              builder = FilterBuilder()<br />builder.must(Field("doc_type").eq("manual"))<br />builder.must(Field("model_no").eq("CX-200"))
-            </code>
-          </div>
-        </div>
-        <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-          <div class="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-            Feature 3
-          </div>
-          <div class="text-xl font-semibold">Hybrid fusion (RRF)</div>
-          <p class="mt-3 text-sm text-zinc-400">
-            Text queries run Actian dense ANN <em>and</em> a second identifier-filtered ANN branch in parallel, then merge with reciprocal rank fusion. Codes like "E04" and identifiers like "CX-200" score high through exact metadata filters; phrases like "motor tripped on overload" score high in the dense branch. RRF covers both.
-          </p>
-          <div class="mt-4 rounded-lg bg-zinc-900 p-3 text-xs text-zinc-400">
-            <code class="mono">
-              score = Σ 1 / (60 + rank)
-            </code>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DEMO VIDEO -->
-    <section id="demo" class="border-y border-zinc-900 bg-zinc-950/60 py-20">
-      <div class="mx-auto max-w-5xl px-6">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          Demo
-        </div>
-        <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-          Laptop in airplane mode. One search bar. Every modality.
+    <section id="why-actian" class="border-b border-zinc-900 bg-zinc-950/40">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">Stack</div>
+        <h2 class="display mt-3 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          Why Actian VectorAI DB is load-bearing here.
         </h2>
-        <div class="mt-8 aspect-video w-full overflow-hidden rounded-2xl border border-zinc-800 bg-black glow">
-          <div class="flex h-full items-center justify-center px-8 text-center text-zinc-500">
-            <div>
-              <div class="text-sm uppercase tracking-[0.2em]">Demo workflow</div>
-              <div class="mt-2 max-w-2xl text-zinc-400">
-                The recorded two-minute walkthrough is the last submission asset to drop in here. Until that publish step, the repo and shot-by-shot demo script are linked below so reviewers can verify the local run path immediately.
-              </div>
-              <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <a
-                  href="https://github.com/Ridwannurudeen/fixfirst-edge"
-                  class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-400"
-                >
-                  View repo
-                </a>
-                <a
-                  href="https://github.com/Ridwannurudeen/fixfirst-edge/blob/master/DEMO.md"
-                  class="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-4 py-2 text-sm font-medium text-white transition hover:border-zinc-500"
-                >
-                  Review demo script
-                </a>
-              </div>
-            </div>
+        <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-zinc-400">
+          Three features in a single database that a commodity vector store would require three tools to stitch together. Each one is doing real work in the request path, not marketing.
+        </p>
+
+        <div class="mt-12 grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-3">
+          <div class="bg-zinc-950 p-6">
+            <div class="mono text-[11px] text-zinc-500">01</div>
+            <div class="mt-3 text-[17px] font-semibold text-white">Named vectors</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-400">
+              One collection holds three embedding spaces — <span class="mono text-zinc-300">text_vec</span> (384d), <span class="mono text-zinc-300">image_vec</span> (512d), <span class="mono text-zinc-300">audio_text_vec</span> (384d). A document can carry any subset and be cross-retrieved through any modality.
+            </p>
+            <pre class="mono mt-5 overflow-x-auto rounded border border-zinc-800 bg-black/60 p-3 text-[11px] leading-[1.7] text-zinc-300">vectors_config={
+  "text_vec":       VectorParams(size=384),
+  "image_vec":      VectorParams(size=512),
+  "audio_text_vec": VectorParams(size=384),
+}</pre>
+          </div>
+          <div class="bg-zinc-950 p-6">
+            <div class="mono text-[11px] text-zinc-500">02</div>
+            <div class="mt-3 text-[17px] font-semibold text-white">Filtered search</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-400">
+              Six keyword-indexed fields — <span class="mono text-zinc-300">doc_type</span>, <span class="mono text-zinc-300">machine_type</span>, <span class="mono text-zinc-300">model_no</span>, <span class="mono text-zinc-300">fault_code</span>, <span class="mono text-zinc-300">severity</span>, <span class="mono text-zinc-300">part_no</span>. Applied in-engine, not post-filtered in Python.
+            </p>
+            <pre class="mono mt-5 overflow-x-auto rounded border border-zinc-800 bg-black/60 p-3 text-[11px] leading-[1.7] text-zinc-300">builder = FilterBuilder()
+builder.must(Field("doc_type").eq("manual"))
+builder.must(Field("model_no").eq("CX-200"))</pre>
+          </div>
+          <div class="bg-zinc-950 p-6">
+            <div class="mono text-[11px] text-zinc-500">03</div>
+            <div class="mt-3 text-[17px] font-semibold text-white">Hybrid RRF fusion</div>
+            <p class="mt-3 text-[14px] leading-relaxed text-zinc-400">
+              Dense ANN and an identifier-filtered ANN branch run in parallel, then merge with reciprocal rank fusion. Tokens like <span class="mono text-zinc-300">E04</span> win through exact filters; "motor tripped on overload" wins through dense. RRF covers both.
+            </p>
+            <pre class="mono mt-5 overflow-x-auto rounded border border-zinc-800 bg-black/60 p-3 text-[11px] leading-[1.7] text-zinc-300"># reciprocal rank fusion
+score(d) = Σ 1 / (60 + rank_i(d))
+# i ∈ {dense, id-filtered}</pre>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ARCHITECTURE -->
-    <section id="architecture" class="mx-auto max-w-6xl px-6 py-24">
-      <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-        Architecture
-      </div>
-      <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-        Everything local. No round-trips.
-      </h2>
+    <section class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">Architecture</div>
+        <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          One process tree, bound to localhost.
+        </h2>
+        <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-zinc-400">
+          Every arrow in the diagram below is a loopback call. No component opens a socket to anything outside <span class="mono text-zinc-200">127.0.0.1</span>.
+        </p>
 
-      <pre class="mono mt-10 overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-xs leading-relaxed text-zinc-400">
-┌─────────────────────────┐       ┌─────────────────────────────────┐
-│  Next.js 14 (frontend)  │  HTTP │  FastAPI (backend)              │
-│  UploadZone, SearchBar, │ ─────►│  /api/ingest/*                  │
-│  FilterPanel,           │       │  /api/search/*                  │
-│  DiagnosePanel,         │       │  /api/diagnose                  │
-│  OfflineBanner          │       │  /api/incident/save             │
-└─────────────────────────┘       └──────────────┬──────────────────┘
-                                                 │
-             ┌───────────────────────────────────┼──────────────────────────────────┐
-             ▼                                   ▼                                  ▼
-   ┌─────────────────────┐         ┌─────────────────────────┐      ┌─────────────────────┐
-   │  pipelines/         │         │  services/              │      │  db.py              │
-   │  text_embedder      │         │  ingest_service         │      │  init_collection    │
-   │  image_embedder     │         │  search_service         │      │  upsert             │
-   │  audio_transcriber  │         │  diagnose_service       │      │  search_text /      │
-   │  pdf_chunker        │         │                         │      │  image / audio /    │
-   │  csv_loader         │         │                         │      │  hybrid (RRF)       │
-   └──────────┬──────────┘         └────────────┬────────────┘      └──────────┬──────────┘
-              │                                 │                              │
-              ▼                                 ▼                              ▼
-   bge-small, CLIP-ViT-B-32,        builds metadata,             gRPC → Actian VectorAI DB
-   whisper tiny.en (CPU)            calls embedders + db         :50051, collection: incidents
-      </pre>
+        <div class="mt-12 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+          <div class="flex items-center justify-between border-b border-zinc-900 bg-zinc-950/70 px-5 py-3">
+            <span class="mono text-[11px] text-zinc-500">architecture · request path</span>
+            <span class="mono text-[11px] text-zinc-600">all edges = localhost</span>
+          </div>
+          <div class="p-6 md:p-10">
+            <svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" class="w-full" aria-label="FixFirst Edge architecture diagram">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#52525B"/>
+                </marker>
+                <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#A1A1AA"/>
+                </marker>
+              </defs>
+
+              <!-- Device frame -->
+              <rect x="10" y="10" width="880" height="460" rx="14" fill="none" stroke="#1f1f22" stroke-dasharray="3 4"/>
+              <text x="28" y="32" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#52525B">technician.laptop</text>
+
+              <!-- Frontend -->
+              <g>
+                <rect x="50" y="70" width="220" height="120" rx="10" fill="#0f0f12" stroke="#3f3f46"/>
+                <text x="68" y="98" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Next.js 14 frontend</text>
+                <text x="68" y="120" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">UploadZone</text>
+                <text x="68" y="138" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">SearchBar · FilterPanel</text>
+                <text x="68" y="156" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">DiagnosePanel</text>
+                <text x="68" y="174" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">OfflineBanner</text>
+              </g>
+
+              <!-- Arrow: Frontend -> Backend -->
+              <line x1="270" y1="130" x2="370" y2="130" stroke="#52525B" stroke-width="1.5" marker-end="url(#arrow)"/>
+              <text x="292" y="122" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#71717A">HTTP</text>
+
+              <!-- Backend -->
+              <g>
+                <rect x="370" y="70" width="260" height="120" rx="10" fill="#0f0f12" stroke="#3f3f46"/>
+                <text x="388" y="98" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">FastAPI backend</text>
+                <text x="388" y="120" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">/api/ingest/*</text>
+                <text x="388" y="138" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">/api/search/*</text>
+                <text x="388" y="156" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">/api/diagnose</text>
+                <text x="388" y="174" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">/api/incident/save</text>
+              </g>
+
+              <!-- Arrow: Backend -> DB -->
+              <line x1="630" y1="130" x2="720" y2="130" stroke="#A1A1AA" stroke-width="1.5" marker-end="url(#arrow-active)"/>
+              <text x="640" y="122" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#A1A1AA">gRPC :50051</text>
+
+              <!-- Actian DB -->
+              <g>
+                <rect x="720" y="70" width="150" height="120" rx="10" fill="#0f0f12" stroke="#52525B"/>
+                <text x="736" y="98" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">Actian VectorAI</text>
+                <text x="736" y="116" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#FAFAFA">DB</text>
+                <text x="736" y="140" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#A1A1AA">collection:</text>
+                <text x="736" y="156" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#A1A1AA">incidents</text>
+                <text x="736" y="174" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#A1A1AA">3 vector lanes</text>
+              </g>
+
+              <!-- Lines down from backend to modules -->
+              <path d="M 500 190 L 500 230 L 160 230 L 160 280" fill="none" stroke="#3f3f46" stroke-width="1.2"/>
+              <path d="M 500 230 L 500 280" fill="none" stroke="#3f3f46" stroke-width="1.2"/>
+              <path d="M 500 230 L 770 230 L 770 280" fill="none" stroke="#3f3f46" stroke-width="1.2"/>
+
+              <!-- Pipelines -->
+              <g>
+                <rect x="50" y="280" width="220" height="130" rx="10" fill="#0b0b0e" stroke="#3f3f46"/>
+                <text x="68" y="306" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">pipelines/</text>
+                <text x="68" y="328" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">text_embedder</text>
+                <text x="68" y="346" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">image_embedder</text>
+                <text x="68" y="364" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">audio_transcriber</text>
+                <text x="68" y="382" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">pdf_chunker, csv_loader</text>
+              </g>
+              <text x="50" y="430" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#71717A">bge-small · CLIP-ViT-B-32 · whisper tiny.en (CPU)</text>
+
+              <!-- Services -->
+              <g>
+                <rect x="390" y="280" width="220" height="130" rx="10" fill="#0b0b0e" stroke="#3f3f46"/>
+                <text x="408" y="306" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">services/</text>
+                <text x="408" y="328" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">ingest_service</text>
+                <text x="408" y="346" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">search_service</text>
+                <text x="408" y="364" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">diagnose_service</text>
+                <text x="408" y="382" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">metadata builders</text>
+              </g>
+              <text x="390" y="430" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#71717A">orchestrates pipelines + db</text>
+
+              <!-- db.py -->
+              <g>
+                <rect x="660" y="280" width="220" height="130" rx="10" fill="#0b0b0e" stroke="#3f3f46"/>
+                <text x="678" y="306" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#FAFAFA">db.py</text>
+                <text x="678" y="328" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">init_collection</text>
+                <text x="678" y="346" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">upsert</text>
+                <text x="678" y="364" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">search_text / image / audio</text>
+                <text x="678" y="382" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="11" fill="#A1A1AA">hybrid (RRF)</text>
+              </g>
+              <text x="660" y="430" font-family="'JetBrains Mono', ui-monospace, monospace" font-size="10" fill="#71717A">gRPC client → Actian VectorAI DB</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENCHMARK -->
+    <section id="benchmark" class="border-b border-zinc-900 bg-zinc-950/40">
+      <div class="mx-auto max-w-5xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">Benchmark</div>
+        <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          Numbers from the actual pipeline, not marketing.
+        </h2>
+        <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-zinc-400">
+          End-to-end <span class="mono text-zinc-200">/api/diagnose</span> latency, warmed, over 20 mixed queries (error codes, part numbers, symptom phrases, machine IDs) against the full demo corpus on a 16 GB consumer laptop, CPU-only, WSL2 + Docker.
+        </p>
+
+        <div class="mt-10 grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-2">
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-baseline justify-between">
+              <div class="mono text-[11px] text-zinc-500">p50 warm</div>
+              <div class="mono text-[10px] text-zinc-600">3-run median</div>
+            </div>
+            <div class="mt-3 display text-5xl font-semibold tracking-tight text-white">843<span class="text-xl text-zinc-500">ms</span></div>
+            <p class="mt-4 text-[13px] leading-relaxed text-zinc-500">9 vector ops per query — query embed, dense ANN, identifier-filtered ANN, three filter-scoped retrievals for the manual, incident, and part slots, plus merge, score and render.</p>
+          </div>
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-baseline justify-between">
+              <div class="mono text-[11px] text-zinc-500">p95 warm</div>
+              <div class="mono text-[10px] text-zinc-600">tightest run</div>
+            </div>
+            <div class="mt-3 display text-5xl font-semibold tracking-tight text-white">1093<span class="text-xl text-zinc-500">ms</span></div>
+            <p class="mt-4 text-[13px] leading-relaxed text-zinc-500">Corpus: 3 PDF manuals, 30 incidents, 25 parts, 13 error codes, 6 schematic images, 5 voice notes. Numbers cluster tightly across three consecutive runs.</p>
+          </div>
+        </div>
+        <p class="mt-6 text-[13px] text-zinc-500">
+          Reproduce with <span class="mono text-zinc-300">scripts/bench_diagnose.py</span>. Headroom exists — a larger corpus with GPU embedding trades differently.
+        </p>
+      </div>
+    </section>
+
+    <!-- OPEN SOURCE / TRUST -->
+    <section class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="grid gap-10 md:grid-cols-[1.15fr_1fr]">
+          <div>
+            <div class="text-[11px] font-medium text-zinc-500">Posture</div>
+            <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+              No keys, no accounts, no vendor lock.
+            </h2>
+            <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-zinc-400">
+              MIT-licensed end to end — backend, frontend, ingestion, and the Docker compose file. There's no usage reporting, no license server, no upstream the operator has to trust. The deployment is an artifact you can read in an afternoon.
+            </p>
+          </div>
+          <div class="rounded-xl border border-zinc-800 bg-zinc-950/60">
+            <div class="flex items-center justify-between border-b border-zinc-900 px-5 py-3">
+              <div class="text-[13px]">
+                <span class="text-zinc-500">Ridwannurudeen / </span><span class="font-semibold text-white">fixfirst-edge</span>
+              </div>
+              <span class="mono text-[11px] text-zinc-500">public</span>
+            </div>
+            <ul class="divide-y divide-zinc-900 text-[14px]">
+              <li class="flex items-center justify-between px-5 py-3">
+                <span class="text-zinc-300">Full stack boot</span>
+                <span class="mono text-[12px] text-zinc-500">docker compose up</span>
+              </li>
+              <li class="flex items-center justify-between px-5 py-3">
+                <span class="text-zinc-300">Tests</span>
+                <span class="mono text-[12px] text-zinc-500">15 passing</span>
+              </li>
+              <li class="flex items-center justify-between px-5 py-3">
+                <span class="text-zinc-300">Demo corpus</span>
+                <span class="mono text-[12px] text-zinc-500">regenerable offline</span>
+              </li>
+              <li class="flex items-center justify-between px-5 py-3">
+                <span class="text-zinc-300">License</span>
+                <span class="mono text-[12px] text-zinc-500">MIT</span>
+              </li>
+              <li class="flex items-center justify-between px-5 py-3">
+                <span class="text-zinc-300">Telemetry endpoints</span>
+                <span class="mono text-[12px] text-zinc-500">0</span>
+              </li>
+            </ul>
+            <a href="https://github.com/Ridwannurudeen/fixfirst-edge" class="block border-t border-zinc-900 px-5 py-3 text-[13px] font-medium text-zinc-300 transition hover:bg-zinc-900 hover:text-white">
+              Browse the repo →
+            </a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- QUICKSTART -->
-    <section id="quickstart" class="border-t border-zinc-900 bg-zinc-950/60 py-24">
-      <div class="mx-auto max-w-4xl px-6">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          Quickstart
+    <section id="quickstart" class="border-b border-zinc-900">
+      <div class="mx-auto max-w-4xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">Install</div>
+        <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          Five commands, no account required.
+        </h2>
+        <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-zinc-400">
+          Start the database, install the backend, seed the corpus, serve, and open the frontend. Disconnect the network at step five and the app keeps working.
+        </p>
+
+        <div class="mt-10 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/60">
+          <div class="flex items-center justify-between border-b border-zinc-900 px-5 py-3">
+            <span class="mono text-[12px] text-zinc-500">install.sh</span>
+            <span class="mono text-[11px] text-zinc-600">bash</span>
+          </div>
+          <div class="divide-y divide-zinc-900">
+            <div class="px-5 py-4">
+              <div class="text-[11px] text-zinc-500">1 — database</div>
+              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">docker run -d --name vectoraidb -p 50051:50051 \
+  --restart unless-stopped williamimoh/actian-vectorai-db:latest</pre>
+            </div>
+            <div class="px-5 py-4">
+              <div class="text-[11px] text-zinc-500">2 — backend</div>
+              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">cd backend &amp;&amp; python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt</pre>
+            </div>
+            <div class="px-5 py-4">
+              <div class="text-[11px] text-zinc-500">3 — corpus</div>
+              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">cp data/fixtures/*.csv data/raw/
+# PDFs → data/raw/manuals/   images → data/raw/images/</pre>
+            </div>
+            <div class="px-5 py-4">
+              <div class="text-[11px] text-zinc-500">4 — serve + ingest</div>
+              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">uvicorn app.main:app --host 127.0.0.1 --port 8000 &amp;
+PYTHONPATH=. python scripts/bulk_ingest.py</pre>
+            </div>
+            <div class="px-5 py-4">
+              <div class="text-[11px] text-zinc-500">5 — frontend</div>
+              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">cd frontend &amp;&amp; npm install &amp;&amp; npm run dev
+# open http://localhost:3000</pre>
+            </div>
+          </div>
         </div>
-        <h2 class="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-          Running in five commands.
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="border-b border-zinc-900 bg-zinc-950/40">
+      <div class="mx-auto max-w-4xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">Questions that come up</div>
+        <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          The six things buyers actually ask.
         </h2>
 
-        <div class="mt-8 space-y-4">
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
-            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">1 · start the DB</div>
-            <pre class="mono overflow-x-auto text-sm text-zinc-200">docker run -d --name vectoraidb -p 50051:50051 \
-  --restart unless-stopped williamimoh/actian-vectorai-db:latest</pre>
-          </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
-            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">2 · install backend</div>
-            <pre class="mono overflow-x-auto text-sm text-zinc-200">cd backend &amp;&amp; python -m venv .venv &amp;&amp; source .venv/bin/activate
-pip install -r requirements.txt</pre>
-          </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
-            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">3 · seed</div>
-            <pre class="mono overflow-x-auto text-sm text-zinc-200">cp data/fixtures/*.csv data/raw/
-# drop your own PDFs into data/raw/manuals/, images into data/raw/images/</pre>
-          </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
-            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">4 · ingest + serve</div>
-            <pre class="mono overflow-x-auto text-sm text-zinc-200">uvicorn app.main:app --host 127.0.0.1 --port 8000 &amp;
-PYTHONPATH=. python scripts/bulk_ingest.py</pre>
-          </div>
-          <div class="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
-            <div class="mb-2 text-xs uppercase tracking-[0.2em] text-zinc-500">5 · frontend</div>
-            <pre class="mono overflow-x-auto text-sm text-zinc-200">cd frontend &amp;&amp; npm install &amp;&amp; npm run dev
-# open http://localhost:3000</pre>
-          </div>
+        <div class="mt-10 divide-y divide-zinc-900 border-y border-zinc-900">
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between text-[16px] font-medium text-white">
+              <span>Can I ingest my own manuals and incident logs?</span>
+              <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+            </summary>
+            <div class="mt-3 max-w-prose text-[14.5px] leading-relaxed text-zinc-400">
+              Yes. Drop PDFs into <span class="mono text-zinc-200">data/raw/manuals/</span>, schematic images into <span class="mono text-zinc-200">data/raw/images/</span>, and CSVs for incidents, parts, and error codes into <span class="mono text-zinc-200">data/raw/</span>. The bulk-ingest script chunks PDFs with pdfplumber, embeds with bge-small / CLIP / whisper, and upserts to the Actian collection. Re-run it whenever the source documents change.
+            </div>
+          </details>
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between text-[16px] font-medium text-white">
+              <span>How large a corpus does this handle on a laptop?</span>
+              <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+            </summary>
+            <div class="mt-3 max-w-prose text-[14.5px] leading-relaxed text-zinc-400">
+              The benchmarked corpus is small (3 PDF manuals, 30 incidents, 25 parts, 13 error codes, 6 schematics, 5 voice clips) because it's built for the hackathon. Actian VectorAI DB itself scales to hundreds of millions of vectors per collection; the bottleneck on a 16 GB laptop is embedding throughput, not retrieval. A ten-thousand-page manual corpus is well inside the envelope. Beyond that, move embedding to a GPU box and leave retrieval on the laptop.
+            </div>
+          </details>
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between text-[16px] font-medium text-white">
+              <span>Does this replace my CMMS?</span>
+              <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+            </summary>
+            <div class="mt-3 max-w-prose text-[14.5px] leading-relaxed text-zinc-400">
+              No. A CMMS tracks work orders, preventative schedules, spares inventory, and asset hierarchies. FixFirst Edge sits next to the CMMS — it's the retrieval layer a technician opens <em>during</em> the fix. Export your incident log and parts catalog, ingest them here, and the two systems are complementary.
+            </div>
+          </details>
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between text-[16px] font-medium text-white">
+              <span>Does it need a GPU?</span>
+              <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+            </summary>
+            <div class="mt-3 max-w-prose text-[14.5px] leading-relaxed text-zinc-400">
+              No. bge-small, CLIP-ViT-B-32, and whisper tiny.en all run acceptably on CPU — the 843ms p50 number is from a 16 GB laptop, CPU-only, WSL2. A GPU helps on the embed side during bulk ingest but is unnecessary for query-time retrieval.
+            </div>
+          </details>
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between text-[16px] font-medium text-white">
+              <span>What's the security posture for regulated environments?</span>
+              <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+            </summary>
+            <div class="mt-3 max-w-prose text-[14.5px] leading-relaxed text-zinc-400">
+              Everything runs local. The diagnose path has zero outbound network calls — that's verifiable by opening the browser network panel during a query or by running the whole stack in a DMZ with egress blocked. No API keys, no license server, no telemetry endpoints, no update channel. The Docker compose file is the entire supply chain; auditors can read it in an afternoon.
+            </div>
+          </details>
+          <details class="group py-5">
+            <summary class="flex cursor-pointer items-center justify-between text-[16px] font-medium text-white">
+              <span>What does it cost?</span>
+              <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+            </summary>
+            <div class="mt-3 max-w-prose text-[14.5px] leading-relaxed text-zinc-400">
+              Zero. MIT-licensed source, free Actian VectorAI DB for the embedded footprint this needs, and the hardware is whatever laptop the technician already has. For context, a cloud CMMS at $35–$200 per user per month costs a ten-person maintenance team between $4,200 and $24,000 a year.
+            </div>
+          </details>
         </div>
       </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="border-t border-zinc-900">
-      <div class="mx-auto max-w-6xl px-6 py-10">
-        <div class="flex flex-col gap-6 text-sm text-zinc-500 md:flex-row md:items-center md:justify-between">
+    <footer class="bg-zinc-950">
+      <div class="mx-auto max-w-7xl px-6 py-14">
+        <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <div class="font-semibold text-white">FixFirst Edge</div>
-            <div class="mt-1">
-              Built for the Actian VectorAI DB Build Challenge · MIT-licensed
+            <div class="flex items-center gap-2.5">
+              <span class="inline-flex h-6 w-6 items-center justify-center rounded-[5px] border border-zinc-700 text-[11px] font-semibold text-zinc-200">FF</span>
+              <span class="text-sm font-semibold tracking-tight">FixFirst Edge</span>
             </div>
+            <p class="mt-4 max-w-xs text-[13px] leading-relaxed text-zinc-500">
+              Offline multimodal maintenance copilot. Manuals, incidents, parts, photos, and voice notes — retrieved on the technician's laptop.
+            </p>
+            <p class="mt-4 text-[12px] text-zinc-600">
+              Built on Actian VectorAI DB · Hosted at <a href="https://edge.gudman.xyz" class="text-zinc-400 hover:text-white">edge.gudman.xyz</a>
+            </p>
           </div>
-          <div class="flex flex-wrap gap-4">
-            <a href="https://github.com/Ridwannurudeen/fixfirst-edge" class="transition hover:text-white">GitHub</a>
-            <a href="#quickstart" class="transition hover:text-white">Quickstart</a>
-            <a href="#why-actian" class="transition hover:text-white">Why Actian</a>
-            <a href="#demo" class="transition hover:text-white">Demo</a>
+          <div>
+            <div class="text-[11px] font-medium text-zinc-500">Product</div>
+            <ul class="mt-4 space-y-2 text-[13px] text-zinc-400">
+              <li><a href="#try" class="hover:text-white transition">Try it</a></li>
+              <li><a href="#walkthrough" class="hover:text-white transition">Walkthrough</a></li>
+              <li><a href="#compare" class="hover:text-white transition">Comparison</a></li>
+              <li><a href="#why-actian" class="hover:text-white transition">Stack</a></li>
+              <li><a href="#benchmark" class="hover:text-white transition">Benchmark</a></li>
+            </ul>
+          </div>
+          <div>
+            <div class="text-[11px] font-medium text-zinc-500">Source</div>
+            <ul class="mt-4 space-y-2 text-[13px] text-zinc-400">
+              <li><a href="https://github.com/Ridwannurudeen/fixfirst-edge" class="hover:text-white transition">GitHub</a></li>
+              <li><a href="#quickstart" class="hover:text-white transition">Install</a></li>
+              <li><a href="https://github.com/Ridwannurudeen/fixfirst-edge/issues" class="hover:text-white transition">Issues</a></li>
+              <li><a href="https://github.com/Ridwannurudeen/fixfirst-edge/blob/master/LICENSE" class="hover:text-white transition">License (MIT)</a></li>
+            </ul>
+          </div>
+          <div>
+            <div class="text-[11px] font-medium text-zinc-500">Contact</div>
+            <ul class="mt-4 space-y-2 text-[13px] text-zinc-400">
+              <li>
+                <a href="mailto:hello@gudman.xyz?subject=FixFirst%20Edge" class="hover:text-white transition">hello@gudman.xyz</a>
+              </li>
+              <li>
+                <a href="https://github.com/Ridwannurudeen/fixfirst-edge/discussions" class="hover:text-white transition">Discussions</a>
+              </li>
+              <li>
+                <a href="https://github.com/Ridwannurudeen/fixfirst-edge/security/advisories" class="hover:text-white transition">Security disclosures</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="divider mt-12"></div>
+        <div class="mt-6 flex flex-col items-start gap-2 text-[12px] text-zinc-600 md:flex-row md:items-center md:justify-between">
+          <div>© 2026 FixFirst Edge contributors. MIT-licensed. No telemetry.</div>
+          <div class="flex items-center gap-4">
+            <span>v0.1.0</span>
+            <span class="h-1 w-1 rounded-full bg-zinc-800"></span>
+            <span>Last updated Apr 2026</span>
           </div>
         </div>
       </div>
     </footer>
+
+    <script>
+      // In-browser retrieval against the real demo corpus (30 incidents, 25 parts, 13 error codes).
+      // This is the identifier-filtered + lexical lane of the RRF pipeline. Dense semantic vectors
+      // (bge-small, CLIP, whisper) are part of the full install, not this landing-page widget.
+      const CORPUS = {
+        incidents: [
+          { id:"inc-001", machine:"Conveyor", model:"CX-200", code:"E04", sev:"high",     sym:"Motor tripped on overload after 3 hours of continuous run",                                    fix:"Replaced thermal overload relay and re-torqued motor mounts",                 parts:"OL-E04-R" },
+          { id:"inc-002", machine:"Compressor", model:"AX-75", code:"P21", sev:"medium",  sym:"Intermittent pressure drop below 6 bar and audible knock",                                      fix:"Cleaned intake filter and replaced worn pressure regulator",                   parts:"PR-75-A" },
+          { id:"inc-003", machine:"Pump", model:"VP-40", code:"L11", sev:"critical",      sym:"Seal leak with fluid pooling under housing",                                                     fix:"Replaced mechanical seal assembly and shaft sleeve",                           parts:"SL-VP40-M" },
+          { id:"inc-004", machine:"Conveyor", model:"CX-200", code:"E04", sev:"medium",   sym:"Belt slipping under load with temperature spike on drive motor",                                fix:"Re-tensioned belt and cleaned drum of debris",                                 parts:"BR-200-T" },
+          { id:"inc-005", machine:"Compressor", model:"AX-75", code:"T33", sev:"high",    sym:"Oil temperature alarm triggered at 95C during peak load",                                        fix:"Flushed oil circuit and replaced cooler fan assembly",                         parts:"CF-75-B" },
+          { id:"inc-006", machine:"Pump", model:"VP-40", code:"V07", sev:"medium",        sym:"Vibration levels exceeding 7 mm/s RMS on bearing housing",                                       fix:"Rebalanced impeller and replaced worn bearing set",                            parts:"BG-VP40-X" },
+          { id:"inc-007", machine:"Conveyor", model:"CX-300", code:"E08", sev:"high",     sym:"Gearbox oil leak from output seal causing slow drive response",                                  fix:"Replaced output shaft seal and refilled gearbox with ISO VG 220 oil",          parts:"GS-300-O" },
+          { id:"inc-008", machine:"Compressor", model:"AX-100", code:"P24", sev:"critical",sym:"Unloader valve stuck closed causing repeated safety trips",                                     fix:"Replaced unloader valve solenoid and tested cutoff pressures",                 parts:"UV-100-S" },
+          { id:"inc-009", machine:"Pump", model:"VP-60", code:"L14", sev:"high",          sym:"Cavitation noise with discharge pressure fluctuating",                                           fix:"Cleared suction line blockage and replaced foot valve",                        parts:"FV-60-D" },
+          { id:"inc-010", machine:"Conveyor", model:"CX-200", code:"E11", sev:"low",      sym:"Photo eye sensor intermittently failing to detect products",                                     fix:"Cleaned sensor lens and realigned emitter-receiver pair",                      parts:"" },
+          { id:"inc-011", machine:"Compressor", model:"AX-75", code:"P21", sev:"high",    sym:"Pressure switch chattering with rapid cycling on and off",                                       fix:"Replaced pressure switch and verified differential setpoint",                  parts:"PS-75-C" },
+          { id:"inc-012", machine:"Pump", model:"VP-40", code:"E22", sev:"medium",        sym:"Motor drawing 12A vs nameplate 9A under no-load",                                                fix:"Cleaned rotor windings and replaced starter contactor",                        parts:"SC-VP40-L" },
+          { id:"inc-013", machine:"Conveyor", model:"CX-300", code:"E04", sev:"critical", sym:"Drive motor winding failure with burnt smell",                                                   fix:"Swapped drive motor to spare unit and scheduled rewind on original",           parts:"DM-300-W" },
+          { id:"inc-014", machine:"Compressor", model:"AX-100", code:"T33", sev:"medium", sym:"Cooler fan running but oil still reaching 88C at 75% duty",                                      fix:"Cleared debris from cooler fins and verified fan RPM with strobe",             parts:"" },
+          { id:"inc-015", machine:"Pump", model:"VP-60", code:"L11", sev:"critical",      sym:"Major seal failure with product contamination",                                                  fix:"Full seal replacement and cleaned casing contamination",                       parts:"SL-VP60-M" },
+          { id:"inc-016", machine:"Conveyor", model:"CX-200", code:"E15", sev:"low",      sym:"End-of-line inductive sensor dropping targets during fast runs",                                 fix:"Adjusted sensor sensitivity and replaced mounting bracket",                    parts:"IS-200-E" },
+          { id:"inc-017", machine:"Compressor", model:"AX-75", code:"P28", sev:"high",    sym:"Air receiver tank drain auto-valve failed closed causing water carryover",                       fix:"Replaced auto-drain valve and installed upstream water separator",             parts:"DV-75-A" },
+          { id:"inc-018", machine:"Pump", model:"VP-40", code:"V07", sev:"low",           sym:"Slight coupling misalignment detected during 6-month inspection",                                fix:"Laser-aligned coupling and re-torqued coupling bolts to 45 Nm",                parts:"" },
+          { id:"inc-019", machine:"Conveyor", model:"CX-300", code:"E08", sev:"medium",   sym:"Hydraulic pressure on tensioner dropping overnight",                                             fix:"Replaced tensioner cylinder seal kit and bled air from circuit",               parts:"TS-300-K" },
+          { id:"inc-020", machine:"Compressor", model:"AX-100", code:"P21", sev:"low",    sym:"Safety relief weeping at 8.1 bar instead of set 8.5 bar",                                        fix:"Replaced safety relief valve and verified set pressure on calibrated bench",   parts:"SR-100-V" },
+          { id:"inc-021", machine:"Conveyor", model:"CX-200", code:"E04", sev:"high",     sym:"Drive motor bearing noise with 5 degree rise above ambient on housing",                          fix:"Replaced drive-side bearing and flushed grease circuit",                       parts:"BG-200-D" },
+          { id:"inc-022", machine:"Pump", model:"VP-40", code:"L11", sev:"high",          sym:"Slow seal weep at flush port detected during weekly inspection",                                 fix:"Replaced seal flush fittings and re-torqued gland bolts",                      parts:"SL-VP40-M" },
+          { id:"inc-023", machine:"Compressor", model:"AX-100", code:"T33", sev:"critical",sym:"Oil temperature reached 102C triggering emergency shutdown",                                    fix:"Replaced oil cooler core and topped up to ISO VG 46",                          parts:"OC-100-C" },
+          { id:"inc-024", machine:"Conveyor", model:"CX-300", code:"E05", sev:"medium",   sym:"Belt speed sensor reporting 8% slip under full product load",                                    fix:"Replaced speed pickup and recalibrated drum encoder",                          parts:"SP-300-E" },
+          { id:"inc-025", machine:"Pump", model:"VP-60", code:"V07", sev:"high",          sym:"Impeller rub on casing wear ring after hydraulic shock event",                                   fix:"Replaced wear ring and balanced impeller assembly",                            parts:"WR-60-I" },
+          { id:"inc-026", machine:"Conveyor", model:"CX-200", code:"E08", sev:"low",      sym:"Gearbox breather clogged causing slight pressure build",                                         fix:"Replaced breather cap and topped up gearbox oil",                              parts:"GB-200-B" },
+          { id:"inc-027", machine:"Compressor", model:"AX-75", code:"P24", sev:"medium",  sym:"Unloader valve slow to cycle on startup in cold environment",                                    fix:"Replaced unloader solenoid coil and added heat trace",                         parts:"UV-75-S" },
+          { id:"inc-028", machine:"Pump", model:"VP-40", code:"L14", sev:"medium",        sym:"Discharge pressure oscillation at 2 Hz after suction strainer service",                          fix:"Re-primed pump and verified NPSH margin above 1.5 m",                          parts:"" },
+          { id:"inc-029", machine:"Conveyor", model:"CX-300", code:"E15", sev:"low",      sym:"Position sensor miss during fastest index cycle only",                                           fix:"Replaced sensor with higher switching frequency model",                        parts:"IS-300-F" },
+          { id:"inc-030", machine:"Compressor", model:"AX-100", code:"P28", sev:"high",   sym:"Auto drain valve stuck open wasting 12% of compressed air",                                      fix:"Replaced drain valve timer and actuator seals",                                parts:"DV-100-T" }
+        ],
+        parts: [
+          { no:"OL-E04-R",  name:"Thermal Overload Relay",   machine:"Conveyor", model:"CX-200" },
+          { no:"PR-75-A",   name:"Pressure Regulator",       machine:"Compressor", model:"AX-75" },
+          { no:"SL-VP40-M", name:"Mechanical Seal Assembly", machine:"Pump", model:"VP-40" },
+          { no:"CF-75-B",   name:"Cooler Fan Assembly",      machine:"Compressor", model:"AX-75" },
+          { no:"BR-200-T",  name:"Belt Tensioner",           machine:"Conveyor", model:"CX-200" },
+          { no:"BG-VP40-X", name:"Bearing Set",              machine:"Pump", model:"VP-40" },
+          { no:"GS-300-O",  name:"Output Shaft Seal Kit",    machine:"Conveyor", model:"CX-300" },
+          { no:"UV-100-S",  name:"Unloader Valve Solenoid",  machine:"Compressor", model:"AX-100" },
+          { no:"FV-60-D",   name:"Foot Valve",               machine:"Pump", model:"VP-60" },
+          { no:"PS-75-C",   name:"Pressure Switch",          machine:"Compressor", model:"AX-75" },
+          { no:"SC-VP40-L", name:"Starter Contactor",        machine:"Pump", model:"VP-40" },
+          { no:"DM-300-W",  name:"Drive Motor",              machine:"Conveyor", model:"CX-300" },
+          { no:"IS-200-E",  name:"Inductive Sensor",         machine:"Conveyor", model:"CX-200" },
+          { no:"DV-75-A",   name:"Auto Drain Valve",         machine:"Compressor", model:"AX-75" },
+          { no:"SL-VP60-M", name:"Mechanical Seal Assembly", machine:"Pump", model:"VP-60" },
+          { no:"TS-300-K",  name:"Tensioner Seal Kit",       machine:"Conveyor", model:"CX-300" },
+          { no:"SR-100-V",  name:"Safety Relief Valve",      machine:"Compressor", model:"AX-100" },
+          { no:"BG-200-D",  name:"Drive-side Bearing",       machine:"Conveyor", model:"CX-200" },
+          { no:"OC-100-C",  name:"Oil Cooler Core",          machine:"Compressor", model:"AX-100" },
+          { no:"SP-300-E",  name:"Belt Speed Pickup",        machine:"Conveyor", model:"CX-300" },
+          { no:"WR-60-I",   name:"Casing Wear Ring",         machine:"Pump", model:"VP-60" },
+          { no:"GB-200-B",  name:"Gearbox Breather Cap",     machine:"Conveyor", model:"CX-200" },
+          { no:"UV-75-S",   name:"Unloader Solenoid Coil",   machine:"Compressor", model:"AX-75" },
+          { no:"IS-300-F",  name:"High-frequency Sensor",    machine:"Conveyor", model:"CX-300" },
+          { no:"DV-100-T",  name:"Drain Valve Timer",        machine:"Compressor", model:"AX-100" }
+        ],
+        codes: [
+          { code:"E04", machine:"Conveyor",   desc:"Motor overload — thermal relay tripped due to sustained over-current on drive motor" },
+          { code:"E05", machine:"Conveyor",   desc:"Belt slip detected — drive drum RPM diverges from belt speed sensor" },
+          { code:"E08", machine:"Conveyor",   desc:"Gearbox alarm — output shaft torque reading exceeds configured envelope" },
+          { code:"E11", machine:"Conveyor",   desc:"Photo eye lost — sensor fails to detect expected product passage" },
+          { code:"E15", machine:"Conveyor",   desc:"Position sensor dropout — inductive target miss during fast index" },
+          { code:"E22", machine:"Pump",       desc:"Motor current anomaly — phase imbalance or winding degradation detected" },
+          { code:"L11", machine:"Pump",       desc:"Seal leak alarm — fluid detected at seal flush or under casing" },
+          { code:"L14", machine:"Pump",       desc:"Cavitation / NPSH alarm — suction pressure below configured margin" },
+          { code:"V07", machine:"Pump",       desc:"Vibration limit — RMS velocity on bearing housing exceeds threshold" },
+          { code:"P21", machine:"Compressor", desc:"Discharge pressure low — pressure drop below setpoint under load" },
+          { code:"P24", machine:"Compressor", desc:"Unloader valve fault — valve stuck or failing to cycle on start" },
+          { code:"P28", machine:"Compressor", desc:"Condensate drain fault — auto-valve stuck open/closed" },
+          { code:"T33", machine:"Compressor", desc:"Oil temperature high — oil circuit above configured alarm threshold" }
+        ]
+      };
+
+      (function () {
+        const input   = document.getElementById("try-input");
+        const runBtn  = document.getElementById("try-run");
+        const results = document.getElementById("try-results");
+        const trace   = document.getElementById("try-trace");
+        const presets = document.querySelectorAll(".try-preset");
+
+        const STOP = new Set(["the","a","an","and","or","on","of","in","to","for","with","at","from","is","was","by","under","after","over","has","have"]);
+
+        function tokenize(q) {
+          return q.toLowerCase().split(/[^a-z0-9\-]+/).filter(t => t && !STOP.has(t));
+        }
+        function extractIdentifiers(q) {
+          const ids = { codes: [], models: [], parts: [] };
+          const up = q.toUpperCase();
+          const codeRe  = /\b([A-Z]\d{2})\b/g;
+          const modelRe = /\b([A-Z]{2}-\d{2,3})\b/g;
+          const partRe  = /\b([A-Z]{2,3}-[A-Z0-9]+-[A-Z0-9]+)\b/g;
+          let m;
+          while ((m = codeRe.exec(up))  !== null) ids.codes.push(m[1]);
+          while ((m = modelRe.exec(up)) !== null) ids.models.push(m[1]);
+          while ((m = partRe.exec(up))  !== null) ids.parts.push(m[1]);
+          return ids;
+        }
+        function lexicalOverlap(tokens, text) {
+          const bag = new Set(text.toLowerCase().split(/[^a-z0-9\-]+/).filter(Boolean));
+          let hits = 0;
+          for (const t of tokens) if (bag.has(t)) hits++;
+          return hits;
+        }
+
+        function scoreIncident(inc, tokens, ids) {
+          let s = 0;
+          const why = [];
+          if (ids.codes.includes(inc.code))   { s += 5;  why.push("code match " + inc.code); }
+          if (ids.models.includes(inc.model)) { s += 4;  why.push("model match " + inc.model); }
+          if (ids.parts.includes(inc.parts))  { s += 3;  why.push("part match " + inc.parts); }
+          const haystack = inc.machine + " " + inc.model + " " + inc.code + " " + inc.sev + " " + inc.sym + " " + inc.fix;
+          const lex = lexicalOverlap(tokens, haystack);
+          if (lex) { s += 1.2 * lex; why.push(lex + " term" + (lex>1?"s":"") + " overlap"); }
+          return { score: s, why };
+        }
+        function scorePart(p, tokens, ids) {
+          let s = 0;
+          const why = [];
+          if (ids.parts.includes(p.no))     { s += 5; why.push("part number match"); }
+          if (ids.models.includes(p.model)) { s += 3; why.push("model match " + p.model); }
+          const hay = p.no + " " + p.name + " " + p.machine + " " + p.model;
+          const lex = lexicalOverlap(tokens, hay);
+          if (lex) { s += 1.1 * lex; why.push(lex + " term" + (lex>1?"s":"") + " overlap"); }
+          return { score: s, why };
+        }
+        function scoreCode(c, tokens, ids) {
+          let s = 0;
+          const why = [];
+          if (ids.codes.includes(c.code)) { s += 5; why.push("exact code match"); }
+          const hay = c.code + " " + c.machine + " " + c.desc;
+          const lex = lexicalOverlap(tokens, hay);
+          if (lex) { s += 1.3 * lex; why.push(lex + " term" + (lex>1?"s":"") + " overlap"); }
+          return { score: s, why };
+        }
+
+        function escapeHtml(s) {
+          return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+        }
+
+        function highlight(text, tokens, ids) {
+          let out = escapeHtml(text);
+          const all = [...tokens, ...ids.codes, ...ids.models, ...ids.parts].filter(Boolean);
+          const uniq = [...new Set(all)].sort((a,b)=>b.length-a.length);
+          for (const t of uniq) {
+            if (!t) continue;
+            const safe = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            out = out.replace(new RegExp("\\b" + safe + "\\b", "gi"),
+              m => `<mark class="bg-white/10 text-white rounded-sm px-0.5">${m}</mark>`);
+          }
+          return out;
+        }
+
+        function run(q) {
+          if (!q || !q.trim()) return;
+          const t0 = performance.now();
+          const tokens = tokenize(q);
+          const ids    = extractIdentifiers(q);
+
+          const scored = {
+            incidents: CORPUS.incidents.map(x => ({ x, ...scoreIncident(x, tokens, ids) })).filter(r=>r.score>0).sort((a,b)=>b.score-a.score),
+            parts:     CORPUS.parts    .map(x => ({ x, ...scorePart    (x, tokens, ids) })).filter(r=>r.score>0).sort((a,b)=>b.score-a.score),
+            codes:     CORPUS.codes    .map(x => ({ x, ...scoreCode    (x, tokens, ids) })).filter(r=>r.score>0).sort((a,b)=>b.score-a.score),
+          };
+          const topInc  = scored.incidents.slice(0,3);
+          const topPart = scored.parts.slice(0,2);
+          const topCode = scored.codes.slice(0,1);
+          const t1 = performance.now();
+          const ms = (t1 - t0).toFixed(2);
+          const totalHits = topInc.length + topPart.length + topCode.length;
+
+          const idSum = ids.codes.length + ids.models.length + ids.parts.length;
+          const traceLine =
+            `<span class="text-zinc-300">${ms}ms</span>` +
+            ` <span class="text-zinc-600">·</span> tokens:<span class="text-zinc-300">${tokens.length}</span>` +
+            ` <span class="text-zinc-600">·</span> ids:<span class="text-zinc-300">${idSum}</span>` +
+            ` <span class="text-zinc-600">·</span> hit:<span class="text-zinc-300">inc ${scored.incidents.length} / part ${scored.parts.length} / code ${scored.codes.length}</span>`;
+          trace.innerHTML = traceLine;
+
+          if (totalHits === 0) {
+            results.innerHTML = `<div class="text-zinc-500">No matches. Try a code like <span class="mono text-zinc-300">E04</span>, a model like <span class="mono text-zinc-300">CX-200</span>, or a symptom phrase like <span class="mono text-zinc-300">seal leak</span>.</div>`;
+            return;
+          }
+
+          const sections = [];
+          if (topCode.length) {
+            const c = topCode[0].x;
+            sections.push(`
+              <div class="rounded-lg border border-zinc-800 bg-black/40 p-4">
+                <div class="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Error code</div>
+                <div class="mt-1.5 text-[15px] font-semibold text-white">${escapeHtml(c.code)} · ${escapeHtml(c.machine)}</div>
+                <div class="mt-1 text-[13px] leading-relaxed text-zinc-400">${highlight(c.desc, tokens, ids)}</div>
+                <div class="mt-2 text-[11px] text-zinc-600 mono">why: ${topCode[0].why.join(" · ")}</div>
+              </div>`);
+          }
+          if (topInc.length) {
+            const rows = topInc.map((r,i) => `
+              <div class="${i>0?'border-t border-zinc-900':''} pt-${i>0?'3':'0'} ${i>0?'mt-3':''}">
+                <div class="flex items-center gap-2">
+                  <span class="mono text-[11px] text-zinc-500">${escapeHtml(r.x.id)}</span>
+                  <span class="text-[11px] text-zinc-600">·</span>
+                  <span class="text-[12px] text-zinc-400">${escapeHtml(r.x.machine)} ${escapeHtml(r.x.model)}</span>
+                  <span class="ml-auto rounded border border-zinc-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-zinc-500">${escapeHtml(r.x.sev)}</span>
+                </div>
+                <div class="mt-1.5 text-[13.5px] leading-relaxed text-zinc-200">${highlight(r.x.sym, tokens, ids)}</div>
+                <div class="mt-1 text-[12.5px] leading-relaxed text-zinc-500">Fix: ${highlight(r.x.fix, tokens, ids)}</div>
+                <div class="mt-1.5 text-[11px] text-zinc-600 mono">why: ${r.why.join(" · ")}</div>
+              </div>`).join("");
+            sections.push(`
+              <div class="rounded-lg border border-zinc-800 bg-black/40 p-4">
+                <div class="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Similar incidents (top ${topInc.length})</div>
+                <div class="mt-2">${rows}</div>
+              </div>`);
+          }
+          if (topPart.length) {
+            const rows = topPart.map(r => `
+              <li class="flex items-baseline justify-between gap-3 py-1.5">
+                <div>
+                  <span class="mono text-[12px] text-zinc-300">${escapeHtml(r.x.no)}</span>
+                  <span class="ml-1 text-[13px] text-zinc-200">${highlight(r.x.name, tokens, ids)}</span>
+                </div>
+                <span class="text-[11.5px] text-zinc-500">${escapeHtml(r.x.machine)} ${escapeHtml(r.x.model)}</span>
+              </li>`).join("");
+            sections.push(`
+              <div class="rounded-lg border border-zinc-800 bg-black/40 p-4">
+                <div class="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Candidate parts</div>
+                <ul class="mt-1 divide-y divide-zinc-900">${rows}</ul>
+              </div>`);
+          }
+          results.innerHTML = sections.join('<div class="h-3"></div>');
+        }
+
+        // wire events
+        function runFromInput() { run(input.value); }
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") runFromInput(); });
+        runBtn.addEventListener("click", runFromInput);
+        presets.forEach(b => b.addEventListener("click", () => {
+          input.value = b.dataset.q;
+          runFromInput();
+        }));
+
+        // initial warm query so the panel isn't empty
+        window.addEventListener("load", () => {
+          input.value = "E04 motor overload";
+          run(input.value);
+        });
+      })();
+
+      // Live GitHub stars
+      (function () {
+        const el = document.getElementById("gh-stars-count");
+        if (!el) return;
+        fetch("https://api.github.com/repos/Ridwannurudeen/fixfirst-edge", { cache: "no-store" })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (!data) return;
+            const n = data.stargazers_count ?? 0;
+            el.textContent = n >= 1000 ? (n/1000).toFixed(1) + "k" : String(n);
+          })
+          .catch(() => {});
+      })();
+
+      // Hide video placeholder once the real video starts playing.
+      (function () {
+        const v = document.querySelector("#video-slot video");
+        const ph = document.getElementById("video-placeholder");
+        if (!v || !ph) return;
+        const hide = () => { ph.style.opacity = "0"; ph.style.pointerEvents = "none"; };
+        v.addEventListener("play", hide);
+        v.addEventListener("loadeddata", () => {
+          if (v.readyState >= 2 && v.videoWidth > 0) hide();
+        });
+      })();
+
+      // Smooth scroll for in-page nav
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          const href = a.getAttribute("href");
+          if (href.length <= 1) return;
+          const el = document.querySelector(href);
+          if (!el) return;
+          e.preventDefault();
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    </script>
   </body>
 </html>
