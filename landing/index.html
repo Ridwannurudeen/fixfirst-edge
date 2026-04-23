@@ -89,7 +89,7 @@
           <a href="#compare" class="hidden lg:inline hover:text-white transition">Comparison</a>
           <a href="#why-actian" class="hidden lg:inline hover:text-white transition">Stack</a>
           <a href="#benchmark" class="hidden lg:inline hover:text-white transition">Benchmark</a>
-          <a href="#quickstart" class="hidden md:inline hover:text-white transition">Install</a>
+          <a href="#how" class="hidden md:inline hover:text-white transition">How it works</a>
           <a
             href="https://github.com/Ridwannurudeen/fixfirst-edge"
             class="inline-flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 font-medium text-white transition hover:border-zinc-600"
@@ -374,7 +374,7 @@
           <div class="text-zinc-300">
             <span class="mono text-white">9 vector ops</span> per user query, zero network calls, every step reproducible.
           </div>
-          <a href="#quickstart" class="text-[13px] text-zinc-400 hover:text-white">Run it locally →</a>
+          <a href="#how" class="text-[13px] text-zinc-400 hover:text-white">Run it locally →</a>
         </div>
       </div>
     </section>
@@ -820,23 +820,118 @@ score(d) = Σ 1 / (60 + rank_i(d))
       </div>
     </section>
 
-    <!-- QUICKSTART -->
-    <section id="quickstart" class="border-b border-zinc-900">
-      <div class="mx-auto max-w-4xl px-6 py-24">
-        <div class="text-[11px] font-medium text-zinc-500">Install</div>
-        <h2 class="display mt-3 text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
-          Five commands, no account required.
+    <!-- HOW IT WORKS -->
+    <section id="how" class="border-b border-zinc-900">
+      <div class="mx-auto max-w-6xl px-6 py-24">
+        <div class="text-[11px] font-medium text-zinc-500">How it works</div>
+        <h2 class="display mt-3 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight md:text-[40px]">
+          Three pieces, running on your laptop.
         </h2>
-        <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-zinc-400">
-          Start the database, install the backend, seed the corpus, serve, and open the frontend. Disconnect the network at step five and the app keeps working.
+        <p class="mt-5 max-w-2xl text-[15px] leading-relaxed text-zinc-400">
+          You don't need to be a developer to use it. Everything ships in one repository and boots with one command. Here's what's actually running when you type a query.
         </p>
 
-        <div class="mt-10 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/60">
-          <div class="flex items-center justify-between border-b border-zinc-900 px-5 py-3">
-            <span class="mono text-[12px] text-zinc-500">install.sh</span>
-            <span class="mono text-[11px] text-zinc-600">bash</span>
+        <!-- Three conceptual pieces -->
+        <div class="mt-12 grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-3">
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">1</span>
+              <span class="mono text-[11px] text-zinc-500">vector store</span>
+            </div>
+            <div class="mt-4 text-[17px] font-semibold text-white">The shelves</div>
+            <p class="mt-2 text-[14px] leading-relaxed text-zinc-400">
+              Actian VectorAI DB runs in a single Docker container on the device. It holds every manual chunk, incident row, part, and voice-note transcript, each with its own embedding in one of three vector spaces.
+            </p>
+            <div class="mt-5 mono text-[11px] text-zinc-500">
+              <div>port</div>
+              <div class="text-zinc-300">localhost:50051</div>
+            </div>
           </div>
-          <div class="divide-y divide-zinc-900">
+
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">2</span>
+              <span class="mono text-[11px] text-zinc-500">retrieval service</span>
+            </div>
+            <div class="mt-4 text-[17px] font-semibold text-white">The librarian</div>
+            <p class="mt-2 text-[14px] leading-relaxed text-zinc-400">
+              A FastAPI process that receives a query, runs the embedders, executes the two-lane hybrid RRF against the shelves, assembles the diagnose payload, and hands back the evidence trail.
+            </p>
+            <div class="mt-5 mono text-[11px] text-zinc-500">
+              <div>port</div>
+              <div class="text-zinc-300">localhost:8000</div>
+            </div>
+          </div>
+
+          <div class="bg-zinc-950 p-6">
+            <div class="flex items-center gap-2">
+              <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-semibold text-zinc-300">3</span>
+              <span class="mono text-[11px] text-zinc-500">diagnostic interface</span>
+            </div>
+            <div class="mt-4 text-[17px] font-semibold text-white">The front desk</div>
+            <p class="mt-2 text-[14px] leading-relaxed text-zinc-400">
+              A Next.js web app that renders the offline banner, the search bar, upload zones for photos and voice clips, and the three-panel diagnose result. This is the only layer the technician sees.
+            </p>
+            <div class="mt-5 mono text-[11px] text-zinc-500">
+              <div>port</div>
+              <div class="text-zinc-300">localhost:3000</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Install block -->
+        <div class="mt-12 grid gap-6 lg:grid-cols-[1.25fr_1fr]">
+          <div class="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+            <div class="flex items-center justify-between border-b border-zinc-900 px-5 py-3">
+              <span class="mono text-[12px] text-zinc-500">~/fixfirst-edge · start up</span>
+              <span class="mono text-[11px] text-zinc-600">bash</span>
+            </div>
+            <div class="px-5 py-6">
+              <div class="mono text-[11px] text-zinc-500">run once, from the repo root</div>
+              <pre class="mono mt-3 overflow-x-auto text-[15px] font-semibold leading-relaxed text-white">./start.sh</pre>
+              <p class="mt-5 text-[13.5px] leading-relaxed text-zinc-400">
+                The script starts the database container, launches the backend, ingests the demo corpus the first time, installs the frontend dependencies the first time, boots the UI, and opens your browser. Subsequent runs skip anything already in place.
+              </p>
+              <div class="mt-6 border-t border-zinc-900 pt-5">
+                <div class="mono text-[11px] text-zinc-500">to stop</div>
+                <pre class="mono mt-2 overflow-x-auto text-[14px] leading-relaxed text-zinc-200">./stop.sh</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col">
+            <div class="text-[11px] font-medium text-zinc-500">Prerequisites</div>
+            <ul class="mt-4 space-y-3 text-[13.5px] text-zinc-300">
+              <li class="flex items-start gap-2">
+                <span class="mono mt-0.5 text-zinc-600">·</span>
+                <span>Docker Desktop (Windows or macOS) or Docker Engine (Linux), running</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mono mt-0.5 text-zinc-600">·</span>
+                <span>Python 3.11+ with a virtual environment at <span class="mono text-zinc-200">~/ffe-venv</span> (override with <span class="mono text-zinc-200">FFE_VENV</span>)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mono mt-0.5 text-zinc-600">·</span>
+                <span>Node.js 18+ available on <span class="mono text-zinc-200">PATH</span></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="mono mt-0.5 text-zinc-600">·</span>
+                <span>~2 GB free disk for the embedding models on first run</span>
+              </li>
+            </ul>
+            <p class="mt-6 text-[12.5px] leading-relaxed text-zinc-500">
+              Logs land in <span class="mono text-zinc-300">.runtime/backend.log</span> and <span class="mono text-zinc-300">.runtime/frontend.log</span>. If anything fails, the script points you at them.
+            </p>
+          </div>
+        </div>
+
+        <!-- Manual fallback -->
+        <details class="group mt-8 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+          <summary class="flex cursor-pointer items-center justify-between px-5 py-4">
+            <span class="text-[13px] font-medium text-zinc-200">Or run each piece manually (five commands)</span>
+            <span class="text-zinc-500 transition group-open:rotate-45">+</span>
+          </summary>
+          <div class="divide-y divide-zinc-900 border-t border-zinc-900">
             <div class="px-5 py-4">
               <div class="text-[11px] text-zinc-500">1 — database</div>
               <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">docker run -d --name vectoraidb -p 50051:50051 \
@@ -845,17 +940,17 @@ score(d) = Σ 1 / (60 + rank_i(d))
             <div class="px-5 py-4">
               <div class="text-[11px] text-zinc-500">2 — backend</div>
               <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">cd backend &amp;&amp; python -m venv .venv &amp;&amp; source .venv/bin/activate
-pip install -r requirements.txt</pre>
+pip install -r requirements.txt
+uvicorn app.main:app --host 127.0.0.1 --port 8000</pre>
             </div>
             <div class="px-5 py-4">
-              <div class="text-[11px] text-zinc-500">3 — corpus</div>
+              <div class="text-[11px] text-zinc-500">3 — seed the corpus</div>
               <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">cp data/fixtures/*.csv data/raw/
 # PDFs → data/raw/manuals/   images → data/raw/images/</pre>
             </div>
             <div class="px-5 py-4">
-              <div class="text-[11px] text-zinc-500">4 — serve + ingest</div>
-              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">uvicorn app.main:app --host 127.0.0.1 --port 8000 &amp;
-PYTHONPATH=. python scripts/bulk_ingest.py</pre>
+              <div class="text-[11px] text-zinc-500">4 — ingest</div>
+              <pre class="mono mt-2 overflow-x-auto text-[13px] leading-relaxed text-zinc-200">PYTHONPATH=. python scripts/bulk_ingest.py</pre>
             </div>
             <div class="px-5 py-4">
               <div class="text-[11px] text-zinc-500">5 — frontend</div>
@@ -863,7 +958,7 @@ PYTHONPATH=. python scripts/bulk_ingest.py</pre>
 # open http://localhost:3000</pre>
             </div>
           </div>
-        </div>
+        </details>
       </div>
     </section>
 
@@ -964,7 +1059,7 @@ PYTHONPATH=. python scripts/bulk_ingest.py</pre>
             <div class="text-[11px] font-medium text-zinc-500">Source</div>
             <ul class="mt-4 space-y-2 text-[13px] text-zinc-400">
               <li><a href="https://github.com/Ridwannurudeen/fixfirst-edge" class="hover:text-white transition">GitHub</a></li>
-              <li><a href="#quickstart" class="hover:text-white transition">Install</a></li>
+              <li><a href="#how" class="hover:text-white transition">How it works</a></li>
               <li><a href="https://github.com/Ridwannurudeen/fixfirst-edge/issues" class="hover:text-white transition">Issues</a></li>
               <li><a href="https://github.com/Ridwannurudeen/fixfirst-edge/blob/master/LICENSE" class="hover:text-white transition">License (MIT)</a></li>
             </ul>
