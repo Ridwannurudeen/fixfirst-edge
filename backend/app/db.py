@@ -68,7 +68,7 @@ def init_collection() -> None:
                 },
                 on_disk_payload=True,
             )
-            _ensure_field_indexes(client)
+        _ensure_field_indexes(client)
         _COLLECTION_READY = True
 
 
