@@ -56,3 +56,35 @@ def test_search_hybrid_uses_identifier_filtered_actian_branches(monkeypatch) -> 
     assert calls[0] == {"doc_type": "manual"}
     assert {"doc_type": "manual", "fault_code": "E04", "model_no": "CX-200"} in calls
     assert {"doc_type": "manual", "fault_code": "E04"} in calls
+
+
+def test_init_collection_ensures_indexes_for_existing_collection(monkeypatch) -> None:
+    ensured: list[object] = []
+
+    class FakeCollections:
+        def exists(self, _name: str) -> bool:
+            return True
+
+        def create(self, *_args, **_kwargs) -> None:  # pragma: no cover - should not be called
+            raise AssertionError("collection should not be recreated")
+
+    class FakeClient:
+        collections = FakeCollections()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    fake_client = FakeClient()
+
+    monkeypatch.setattr(db, "_require_client", lambda: None)
+    monkeypatch.setattr(db, "_client", lambda: fake_client)
+    monkeypatch.setattr(db, "_ensure_field_indexes", lambda client: ensured.append(client))
+    monkeypatch.setattr(db, "_COLLECTION_READY", False)
+
+    db.init_collection()
+
+    assert ensured == [fake_client]
+    assert db._COLLECTION_READY is True

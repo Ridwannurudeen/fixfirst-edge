@@ -52,7 +52,7 @@
 **Visual**: open the severity filter → pick `critical`. Show the results narrow.
 
 **VO**:
-> "Every query can be filtered by machine type, severity, model number, fault code. Filters hit keyword-indexed metadata on the Actian side — not post-filtering in Python. That's how you make a 200-document collection useful."
+> "In the live UI, the tech can narrow by machine type or severity. Under the hood, the retrieval path still uses indexed model and fault-code metadata inside Actian — not post-filtering in Python. That's how you make a 200-document collection useful."
 
 ### [01:20 – 01:40] Image query
 

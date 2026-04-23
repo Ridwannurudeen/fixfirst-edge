@@ -565,7 +565,7 @@
           <div class="bg-zinc-950 p-6">
             <div class="text-[11px] font-medium text-zinc-500">Filtered narrowing</div>
             <p class="mt-3 text-[14px] leading-relaxed text-zinc-300">
-              Any query can be narrowed by machine type, model, fault code, or severity. Filters apply in-engine against Actian's keyword index — not post-filtered in Python.
+              In the live UI, the technician narrows by machine type or severity. Under the hood, the retrieval path also uses indexed <span class="mono text-zinc-200">model_no</span> and <span class="mono text-zinc-200">fault_code</span> metadata — extracted from the query, applied in-engine against Actian's keyword index, not post-filtered in Python.
             </p>
             <div class="mono mt-5 text-[11px] leading-relaxed text-zinc-500">
               <span class="text-zinc-400">filter</span> <span class="text-zinc-600">→</span> model_no=CX-200<br />
