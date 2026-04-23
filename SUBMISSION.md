@@ -26,6 +26,18 @@ An offline copilot that helps industrial technicians fix machines fast by retrie
 
 Actian VectorAI DB Build Challenge — main track.
 
+## Judging highlights
+
+Seven things that separate this entry from a typical hackathon submission. All verifiable from the repo and the live site.
+
+1. **All three rubric features used in load-bearing ways.** Named vectors carry text, image, and audio embeddings side-by-side in one collection. Filtered search hits Actian's keyword index in-engine on six metadata fields. Hybrid RRF fuses a dense ANN lane with an identifier-filtered ANN lane — not theatre, the diagnose endpoint actually exercises both.
+2. **Reproducible benchmarks, not marketing numbers.** End-to-end `/api/diagnose` p50 = 843ms, p95 = 1093ms, warmed, 16 GB laptop, CPU-only. Reproduce with `scripts/bench_diagnose.py`. Most submissions claim "fast" without receipts.
+3. **Full multimodal pipeline.** bge-small (text, 384d), CLIP-ViT-B-32 (image, 512d), faster-whisper tiny.en (audio → text, 384d) — all embedded locally on CPU. Most entries will be text-only.
+4. **Real-world positioning.** Offline industrial maintenance is a $50B downtime problem, not another LLM-wrapper. The category is wide open — no incumbent owns the offline / air-gapped wedge we address.
+5. **Production-grade landing page at [edge.gudman.xyz](https://edge.gudman.xyz).** Benchmarked directly against Augury, MaintainX, UpKeep, Fiix, Limble, Dozuki, Tulip, and Aquant. Includes an in-browser interactive retrieval widget against the real demo corpus.
+6. **Production sensibility.** 19 backend tests passing, MIT-licensed, public repo, deployed domain, one-command `./start.sh` + `./stop.sh` lifecycle, `docker compose` full-stack deployment, regenerable demo corpus (3 PDFs, 6 schematics, 5 voice notes, 30 incidents, 25 parts, 13 error codes).
+7. **Interactive demo on the landing page.** Visitors can type a query and see real browser-measured retrieval latency against the demo corpus — no install required to verify the core claim.
+
 ## Full description
 
 Industrial downtime costs an estimated $50B per year. When a machine faults, the technician on the floor has minutes, not hours, to diagnose the problem. The information needed — equipment manuals, historical incidents, parts catalogs, even colleagues' voice notes — exists, but it is scattered across PDFs, spreadsheets, and shared drives, and the plant floor rarely has reliable internet.
@@ -91,11 +103,24 @@ Owner to replace with final name, role, and contact details.
 - Next.js 14 frontend with UploadZone, SearchBar, FilterPanel, DiagnosePanel, OfflineBanner
 - `verify_offline.py` — cold end-to-end smoke test
 - Fixture CSV + demo asset generator (3 PDF manuals, 6 schematic images, 5 voice notes — fully regenerable from fixtures)
-- 13 backend unit tests, all green
+- 19 backend unit tests, all green
+- Benchmark script (`scripts/bench_diagnose.py`) producing the reproducible p50 / p95 numbers cited above
+- `start.sh` / `stop.sh` — single-command local lifecycle
+- Production landing page deployed to [edge.gudman.xyz](https://edge.gudman.xyz) with a real browser-native retrieval widget against the demo corpus
 
 ## How to run
 
-See [README.md — Quickstart](README.md#quickstart). Five commands total: start Actian, install backend, seed, run backend+ingest, run frontend. Then disconnect WiFi and watch the banner stay green.
+**One command from the repo root:**
+
+```bash
+./start.sh
+```
+
+Boots the Actian DB container, the FastAPI backend, ingests the demo corpus on first run, launches the Next.js frontend, and opens the browser at `http://localhost:3000`. Stop with `./stop.sh`.
+
+Manual five-step path is documented in the README and the `#install` section of [edge.gudman.xyz](https://edge.gudman.xyz/#install).
+
+Once the UI is open, disconnect your WiFi — the app keeps working.
 
 ## License
 
