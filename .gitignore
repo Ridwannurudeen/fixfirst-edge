@@ -1,5 +1,8 @@
 ﻿data/raw/
 data/processed/
+data/datastore.ini
+data/incidents/
+data/vde.log
 .env
 node_modules/
 __pycache__/

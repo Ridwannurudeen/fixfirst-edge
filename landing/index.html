@@ -450,18 +450,13 @@
         <div class="see-panel mt-10 hidden" data-see="video">
           <div class="overflow-hidden rounded-xl border border-zinc-800 bg-black">
             <div id="video-slot" class="relative aspect-video w-full">
-              <video class="h-full w-full bg-black object-cover" poster="/assets/video-poster.svg" controls preload="metadata" playsinline>
-                <source src="/assets/walkthrough.mp4" type="video/mp4" />
-              </video>
-              <div id="video-placeholder" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-zinc-950 via-black to-zinc-950 text-center">
-                <div class="flex h-14 w-14 items-center justify-center rounded-full border accent-border bg-black/60">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="translate-x-0.5 accent"><path d="M7 4v16l14-8L7 4Z" fill="currentColor"/></svg>
-                </div>
-                <div class="max-w-sm px-8">
-                  <div class="text-sm font-semibold text-zinc-200">2-minute walkthrough</div>
-                  <div class="mt-1 text-[12.5px] leading-relaxed text-zinc-500">WiFi disabled throughout. Error code → photo → voice → filter. All offline, all measured.</div>
-                </div>
-              </div>
+              <iframe
+                class="h-full w-full bg-black"
+                src="https://www.youtube-nocookie.com/embed/eKGRRkdDurA"
+                title="FixFirst Edge demo walkthrough"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
             </div>
           </div>
           <div class="mt-5 grid grid-cols-2 gap-3 text-[12px] text-zinc-500 md:grid-cols-4">

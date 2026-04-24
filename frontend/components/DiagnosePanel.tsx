@@ -15,26 +15,26 @@ type ConfidenceTone = {
   pill: string;
 };
 
-function toneFor(confidence: number): ConfidenceTone {
-  if (confidence >= 0.6) {
+function toneFor(evidenceCount: number): ConfidenceTone {
+  if (evidenceCount === 3) {
     return {
-      label: "High",
-      explanation: "All three evidence slots matched with strong identifier overlap.",
+      label: "Complete",
+      explanation: "Manual, incident, and part evidence were all retrieved. Verify the cited source before acting.",
       band: "border-emerald-500/30 bg-emerald-500/10",
       pill: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300",
     };
   }
-  if (confidence >= 0.3) {
+  if (evidenceCount > 0) {
     return {
-      label: "Medium",
-      explanation: "Partial evidence match. Review the manual section before acting.",
+      label: "Partial",
+      explanation: "Some evidence was retrieved. Review the available source before acting.",
       band: "border-amber-500/30 bg-amber-500/10",
       pill: "border-amber-500/40 bg-amber-500/10 text-amber-300",
     };
   }
   return {
-    label: "Low",
-    explanation: "Weak signal. Treat suggestions as a starting point, not a prescription.",
+    label: "No match",
+    explanation: "No supporting evidence was retrieved. Refine the query or add a machine identifier.",
     band: "border-red-500/30 bg-red-500/10",
     pill: "border-red-500/40 bg-red-500/10 text-red-300",
   };
@@ -43,8 +43,10 @@ function toneFor(confidence: number): ConfidenceTone {
 export function DiagnosePanel({ result, saveDefaults, transcript, onSave }: DiagnosePanelProps) {
   const evidence = result?.evidence;
   const recommendations = result?.recommended_steps ?? [];
-  const tone = result ? toneFor(result.confidence) : null;
-  const confidencePct = result ? Math.round(result.confidence * 100) : null;
+  const evidenceCount = evidence
+    ? [evidence.manual_section, evidence.similar_incident, evidence.candidate_part].filter(Boolean).length
+    : 0;
+  const tone = result ? toneFor(evidenceCount) : null;
 
   const manual = evidence?.manual_section;
   const incident = evidence?.similar_incident;
@@ -57,9 +59,9 @@ export function DiagnosePanel({ result, saveDefaults, transcript, onSave }: Diag
           <p className="text-sm uppercase tracking-[0.2em] text-zinc-500">Diagnosis</p>
           <h2 className="text-2xl font-semibold">Evidence-backed recommendations</h2>
         </div>
-        {tone && confidencePct !== null ? (
+        {tone ? (
           <div className={`rounded-full border px-3 py-1 text-sm font-medium ${tone.pill}`}>
-            {tone.label} · {confidencePct}%
+            {tone.label} · {evidenceCount}/3
           </div>
         ) : (
           <div className="rounded-full border border-zinc-800 px-3 py-1 text-sm text-zinc-400">
@@ -77,7 +79,7 @@ export function DiagnosePanel({ result, saveDefaults, transcript, onSave }: Diag
 
       {tone ? (
         <div className={`rounded-2xl border p-4 text-sm ${tone.band}`}>
-          <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">Confidence</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">Evidence coverage</p>
           <p className="mt-1 text-zinc-200">{tone.explanation}</p>
         </div>
       ) : null}

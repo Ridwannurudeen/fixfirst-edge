@@ -4,6 +4,7 @@ from fastapi import UploadFile
 
 from app import db
 from app.pipelines.audio_transcriber import transcribe
+from app.pipelines.identifier_extractor import extract_identifiers
 from app.pipelines.image_embedder import embed_image
 from app.pipelines.text_embedder import embed_text
 from app.schemas import DiagnoseEvidence, DiagnoseResponse, SearchFilters
@@ -75,7 +76,11 @@ async def diagnose(
     if image is not None:
         image_results = await search_image(image, filters)
         if not seed_text and image_results:
-            seed_text = str(image_results[0]["metadata"].get("text_content", ""))
+            seed_text = _metadata_seed(image_results[0]["metadata"])
+        elif seed_text and image_results:
+            image_seed = _metadata_seed(image_results[0]["metadata"])
+            if image_seed:
+                seed_text = f"{seed_text} {image_seed}"
 
     manual_section = _top_manual(seed_text, filters)
     similar_incident = _top_incident(seed_text, filters, image_results or voice_results)
@@ -115,23 +120,38 @@ async def diagnose(
 def _top_manual(query: str, filters: SearchFilters | None) -> dict | None:
     if not query:
         return None
+    manual_query = _manual_query(query)
     manual_filters = _merged_filters(filters, {"doc_type": "manual"})
-    hits = db.search_hybrid(query, embed_text(query), manual_filters, k=1)
+    exact_filters = _identifier_filters(query, allowed={"model_no", "fault_code"})
+    if exact_filters:
+        hits = db.search_hybrid(manual_query, embed_text(manual_query), {**manual_filters, **exact_filters}, k=1)
+        if hits:
+            return _manual_evidence(hits[0])
+    hits = db.search_hybrid(manual_query, embed_text(manual_query), manual_filters, k=1)
     if not hits:
         return None
-    metadata = hits[0]["metadata"]
+    return _manual_evidence(hits[0])
+
+
+def _manual_evidence(hit: dict) -> dict:
+    metadata = hit["metadata"]
     return {
         "source": metadata.get("source_id", ""),
         "page": metadata.get("page"),
         "snippet": str(metadata.get("text_content", ""))[:300],
-        "score": hits[0]["score"],
+        "score": hit["score"],
     }
 
 
 def _top_incident(query: str, filters: SearchFilters | None, fallback_hits: list[dict]) -> dict | None:
     incident_filters = _merged_filters(filters, {"doc_type": "incident", "verified": True})
     if query:
-        hits = db.search_hybrid(query, embed_text(query), incident_filters, k=1)
+        exact_filters = _identifier_filters(query)
+        hits = []
+        if exact_filters:
+            hits = db.search_hybrid(query, embed_text(query), {**incident_filters, **exact_filters}, k=1)
+        if not hits:
+            hits = db.search_hybrid(query, embed_text(query), incident_filters, k=1)
     else:
         hits = [
             hit
@@ -186,6 +206,38 @@ def _merged_filters(filters: SearchFilters | None, extra: dict[str, str]) -> dic
         merged.update(filters.as_query())
     merged.update(extra)
     return merged
+
+
+def _metadata_seed(metadata: dict) -> str:
+    parts = []
+    for key in ("machine_type", "model_no", "fault_code", "part_no", "text_content", "source_id"):
+        value = metadata.get(key)
+        if value is None:
+            continue
+        text = str(value).strip()
+        if not text or text.lower() == "unknown":
+            continue
+        parts.append(text)
+    return " ".join(parts)
+
+
+def _identifier_filters(query: str, *, allowed: set[str] | None = None) -> dict[str, str]:
+    identifiers = extract_identifiers(query)
+    return {
+        field: value
+        for field, value in identifiers.items()
+        if value and (allowed is None or field in allowed)
+    }
+
+
+def _manual_query(query: str) -> str:
+    identifiers = extract_identifiers(query)
+    parts = []
+    if identifiers.get("fault_code"):
+        parts.extend([identifiers["fault_code"], "fault response"])
+    if identifiers.get("model_no"):
+        parts.append(identifiers["model_no"])
+    return " ".join(parts) if parts else query
 
 
 def _rrf_merge(rankings: list[list[dict]]) -> list[dict]:

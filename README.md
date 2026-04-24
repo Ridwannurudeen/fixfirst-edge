@@ -149,10 +149,11 @@ docker compose --profile full up --build
 ```bash
 cd backend
 python3.11 -m venv .venv && source .venv/bin/activate   # or python3.12
+pip install /path/to/actian_vectorai-0.1.0b2-py3-none-any.whl
 pip install -r requirements.txt
 ```
 
-Use Python 3.11 or 3.12. `requirements.txt` already includes `actian-vectorai==0.1.0b2`, so no extra wheel install step is required.
+Use Python 3.11 or 3.12. `requirements.txt` pins `actian-vectorai==0.1.0b2`, but the SDK wheel must be installed from the Actian/organizer-provided beta package before running the requirements install. If the wheel is already installed, `pip install -r requirements.txt` treats the requirement as satisfied.
 
 ### 3. Seed data
 
@@ -237,7 +238,7 @@ The Next.js UI is built around a single unified entry point — `POST /api/diagn
 ```bash
 cd backend
 pytest tests -q
-# 19 passed
+# 21 passed
 ```
 
 All pipelines unit-tested with fake embedders / mock search results (no network, no models needed for CI).

@@ -246,3 +246,78 @@ def test_diagnose_requires_verified_incidents(monkeypatch) -> None:
         assert body["evidence"]["similar_incident"]["id"] == "inc-verified"
 
     asyncio.run(run())
+
+
+def test_image_only_diagnose_uses_image_metadata_seed(monkeypatch) -> None:
+    from app.services import search_service
+
+    observed_queries: list[str] = []
+
+    async def fake_search_image(_image, _filters):
+        return [
+            {
+                "id": "image:schematic_01_conveyor_E04.png",
+                "score": 1.0,
+                "metadata": {
+                    "doc_type": "incident",
+                    "machine_type": "Conveyor",
+                    "model_no": "CX-200",
+                    "fault_code": "E04",
+                    "part_no": "OL-E04-R",
+                    "source_id": "schematic_01_conveyor_E04.png",
+                    "text_content": "Conveyor CX-200 E04 OL-E04-R schematic",
+                },
+            }
+        ]
+
+    def fake_embed_text(text: str) -> np.ndarray:
+        observed_queries.append(text)
+        return np.zeros(384, dtype=np.float32)
+
+    def fake_search_hybrid(query: str, _vec, filters, k: int = 10) -> list[dict]:
+        observed_queries.append(query)
+        doc_type = (filters or {}).get("doc_type")
+        if doc_type == "manual":
+            return [_manual_hit()]
+        if doc_type == "incident":
+            return [
+                _incident_hit(
+                    {
+                        "id": "inc-001",
+                        "machine_type": "Conveyor",
+                        "model_no": "CX-200",
+                        "fault_code": "E04",
+                        "severity": "high",
+                        "symptom": "Motor tripped on overload",
+                        "fix_applied": "Replaced thermal overload relay and re-torqued motor mounts",
+                        "downtime_min": "45",
+                        "parts_used": "OL-E04-R",
+                    }
+                )
+            ]
+        if doc_type == "part":
+            return [
+                _part_hit(
+                    {
+                        "part_no": "OL-E04-R",
+                        "name": "Thermal Overload Relay",
+                        "machine_type": "Conveyor",
+                        "model_no": "CX-200",
+                    }
+                )
+            ]
+        return []
+
+    monkeypatch.setattr(search_service, "search_image", fake_search_image)
+    monkeypatch.setattr(search_service, "embed_text", fake_embed_text)
+    monkeypatch.setattr(search_service.db, "search_hybrid", fake_search_hybrid)
+
+    async def run() -> None:
+        result = await search_service.diagnose(None, object(), None, None)
+        assert result.evidence.similar_incident is not None
+        assert result.evidence.similar_incident.id == "inc-001"
+        assert result.evidence.candidate_part is not None
+        assert result.evidence.candidate_part.part_no == "OL-E04-R"
+
+    asyncio.run(run())
+    assert any("CX-200" in query and "E04" in query and "OL-E04-R" in query for query in observed_queries)

@@ -28,10 +28,12 @@ async def ingest_incident(body: IncidentRowRequest) -> dict[str, str]:
 async def ingest_image(
     file: UploadFile = File(...),
     machine_type: str = Form(...),
+    model_no: str | None = Form(default=None),
     fault_code: str | None = Form(default=None),
     severity: str | None = Form(default=None),
+    part_no: str | None = Form(default=None),
 ) -> dict[str, str]:
-    doc_id = await ingest_service.ingest_image(file, machine_type, fault_code, severity)
+    doc_id = await ingest_service.ingest_image(file, machine_type, model_no, fault_code, severity, part_no)
     return {"id": doc_id}
 
 
