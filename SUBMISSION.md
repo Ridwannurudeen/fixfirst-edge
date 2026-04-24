@@ -2,11 +2,11 @@
 
 Fill the form at https://dorahacks.io/hackathon/2097 with the content below.
 
-## Owner-supplied fields before final submit
+## Final submission fields
 
-- Demo video URL (YouTube unlisted)
-- Cover image / app screenshot
-- Team member names and contact details
+- Demo video URL: https://youtu.be/eKGRRkdDurA
+- Cover image: use an app screenshot with the `OFFLINE - Ready locally` pill and the filled diagnosis panel.
+- Team: Ridwannurudeen and collaborators listed in the DoraHacks team form.
 
 ---
 
@@ -78,7 +78,7 @@ https://edge.gudman.xyz
 
 ## Demo video
 
-Owner to paste the final YouTube unlisted URL after recording.
+https://youtu.be/eKGRRkdDurA
 
 ## Architecture diagram
 
@@ -86,13 +86,13 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) — Mermaid source plus request lifecyc
 
 ## Cover image
 
-Preferred: attach a screenshot of the app with the green OFFLINE pill and a filled Diagnose panel.
+Attach a screenshot of the app with the green OFFLINE pill and a filled Diagnose panel.
 
 Fallback branded cover asset in repo: `landing/cover.svg` (export to PNG if the submission form does not accept SVG).
 
 ## Team
 
-Owner to replace with final name, role, and contact details.
+Ridwannurudeen — builder / maintainer. Additional teammates should be listed in the DoraHacks team form.
 
 ## What we built during the hackathon
 
@@ -103,7 +103,7 @@ Owner to replace with final name, role, and contact details.
 - Next.js 14 frontend with UploadZone, SearchBar, FilterPanel, DiagnosePanel, OfflineBanner
 - `verify_offline.py` — cold end-to-end smoke test
 - Fixture CSV + demo asset generator (3 PDF manuals, 6 schematic images, 5 voice notes — fully regenerable from fixtures)
-- 19 backend unit tests, all green
+- 21 backend tests, all green
 - Benchmark script (`scripts/bench_diagnose.py`) producing the reproducible p50 / p95 numbers cited above
 - `start.sh` / `stop.sh` — single-command local lifecycle
 - Production landing page deployed to [edge.gudman.xyz](https://edge.gudman.xyz) with a real browser-native retrieval widget against the demo corpus

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import csv
 import shutil
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
@@ -447,18 +448,6 @@ def gen_images(incidents: list[dict], parts: list[dict]) -> None:
 
 
 def gen_voice() -> None:
-    try:
-        import pyttsx3
-    except ImportError:
-        print("pyttsx3 missing — skipping voice generation")
-        return
-    engine = pyttsx3.init()
-    engine.setProperty("rate", 165)
-    engine.setProperty("volume", 1.0)
-    voices = engine.getProperty("voices")
-    if voices:
-        engine.setProperty("voice", voices[0].id)
-
     notes = [
         (
             "voice_01_conveyor_e04.wav",
@@ -490,6 +479,26 @@ def gen_voice() -> None:
             "and swap the bearing set.",
         ),
     ]
+
+    if shutil.which("espeak-ng"):
+        for name, text in notes:
+            out = VOICE / name
+            subprocess.run(["espeak-ng", "-w", str(out), text], check=True)
+            print(f"wrote data/raw/voice/{name}")
+        return
+
+    try:
+        import pyttsx3
+    except ImportError:
+        print("espeak-ng and pyttsx3 missing — skipping voice generation")
+        return
+
+    engine = pyttsx3.init()
+    engine.setProperty("rate", 165)
+    engine.setProperty("volume", 1.0)
+    voices = engine.getProperty("voices")
+    if voices:
+        engine.setProperty("voice", voices[0].id)
     for name, text in notes:
         out = VOICE / name
         engine.save_to_file(text, str(out))

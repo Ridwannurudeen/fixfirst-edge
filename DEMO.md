@@ -13,10 +13,10 @@
 - [ ] WiFi disconnected (airplane mode on laptop)
 - [ ] Actian container running: `docker ps` shows `vectoraidb Up`
 - [ ] Backend up: `curl http://localhost:8000/api/health` → `db:true`
-- [ ] Frontend up: http://localhost:3000 loads
+- [ ] Frontend up: http://localhost:3000 loads, or http://localhost:3001 if port 3000 is already occupied
 - [ ] `data/raw/` has real seed data ingested (`bulk_ingest.py` run once)
-- [ ] A test photo ready to drag (damaged motor or similar)
-- [ ] A test voice note ready (e.g. "the pump is making a grinding sound")
+- [ ] Test image ready: `data/raw/images/schematic_01_conveyor_E04.png`
+- [ ] Test voice note ready: `data/raw/voice/voice_01_conveyor_e04.wav`
 - [ ] Browser in dark mode, 100% zoom, dev tools closed
 - [ ] Close everything else — no Slack/email notifications
 
@@ -26,7 +26,7 @@
 
 ### [00:00 – 00:15] Cold open
 
-**Visual**: camera on laptop showing the airplane icon in the taskbar → cut to http://localhost:3000 with the green "OFFLINE — Running locally" pill.
+**Visual**: camera on laptop showing the airplane icon in the taskbar → cut to the local app with the green "OFFLINE — Ready locally" pill.
 
 **VO**:
 > "This laptop has no internet. No cloud APIs. Everything you're about to see — text search, image search, voice transcription, vector retrieval — runs locally. This is FixFirst Edge."
@@ -40,12 +40,12 @@
 
 ### [00:35 – 00:55] Text query
 
-**Visual**: click the search bar, type `E04 motor overload`, hit Enter.
+**Visual**: click the search bar, type `E04 motor overload on CX-200 thermal overload relay`, then run diagnosis.
 
 **VO**:
 > "Type an error code. FixFirst Edge runs a hybrid search — dense vector ANN over embeddings, plus a second Actian retrieval lane filtered by exact identifiers like fault codes and model numbers — fused with reciprocal rank fusion. That matters because 'E04' or 'CX-200' are identifiers dense alone can underweight."
 
-**Visual highlight**: the Diagnose panel fills — manual section, similar incident, candidate part, confidence bar, recommended steps.
+**Visual highlight**: the Diagnose panel fills — manual section, similar incident, candidate part, evidence coverage, recommended steps.
 
 ### [00:55 – 01:20] Filtered search
 

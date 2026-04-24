@@ -95,19 +95,27 @@ def ingest_incident(row: dict[str, str | int | float | bool | None]) -> str:
 async def ingest_image(
     file: UploadFile,
     machine_type: str,
+    model_no: str | None,
     fault_code: str | None,
     severity: str | None,
+    part_no: str | None,
 ) -> str:
     temp_path = await _save_upload(file)
     try:
         db.init_collection()
-        text_content = " ".join(part for part in [machine_type, fault_code, severity, file.filename or temp_path.name] if part)
+        text_content = " ".join(
+            part
+            for part in [machine_type, model_no, fault_code, severity, part_no, file.filename or temp_path.name]
+            if part
+        )
         source_id = file.filename or temp_path.name
         metadata = _base_metadata(
             "incident",
             machine_type,
+            model_no=model_no,
             fault_code=fault_code,
             severity=severity,
+            part_no=part_no,
         )
         metadata.update(
             {
