@@ -297,9 +297,19 @@
                 <td class="px-5 py-4">Technician's laptop</td>
               </tr>
               <tr>
+                <td class="px-5 py-4 text-zinc-400">Data leaves the device</td>
+                <td class="px-5 py-4 text-zinc-500">Every query</td>
+                <td class="px-5 py-4">Never</td>
+              </tr>
+              <tr>
                 <td class="px-5 py-4 text-zinc-400">Diagnosis method</td>
                 <td class="px-5 py-4 text-zinc-500">LLM-generated prose</td>
                 <td class="px-5 py-4">Templated from retrieved rows</td>
+              </tr>
+              <tr>
+                <td class="px-5 py-4 text-zinc-400">Answer traceability</td>
+                <td class="px-5 py-4 text-zinc-500">Partial or none</td>
+                <td class="px-5 py-4">Every answer cites a page</td>
               </tr>
               <tr>
                 <td class="px-5 py-4 text-zinc-400">Pricing</td>
@@ -383,6 +393,19 @@
                 <div class="text-zinc-500">843ms · 0 B egress</div>
               </div>
             </div>
+          </div>
+
+          <div class="mt-8 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+            <div class="flex items-center justify-between border-b border-zinc-900 px-4 py-2.5">
+              <div class="mono text-[11px] text-zinc-500">localhost:3000 — fixfirst-edge, on laptop</div>
+              <div class="mono text-[11px] text-zinc-600">captured · airplane mode</div>
+            </div>
+            <img
+              src="/assets/empty-ready.png"
+              alt="FixFirst Edge frontend on localhost with offline banner visible, ready to diagnose"
+              class="block w-full"
+              loading="lazy"
+            />
           </div>
         </div>
 
@@ -615,6 +638,35 @@ score(d) = Σ 1 / (60 + rank_i(d))
               <p class="mt-5 text-[12.5px] text-zinc-500">
                 Reproduce with <span class="mono text-zinc-300">scripts/bench_diagnose.py</span>.
               </p>
+
+              <div class="mt-8">
+                <div class="text-[11px] font-medium text-zinc-500">Where the 843 ms goes</div>
+                <div class="mt-4 grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-4">
+                  <div class="bg-zinc-950 p-5">
+                    <div class="mono text-[11px] text-zinc-500">0 — 12 ms</div>
+                    <div class="mt-2 text-[14px] font-semibold text-white">Query embed</div>
+                    <p class="mt-2 text-[12.5px] leading-relaxed text-zinc-400">bge-small produces a 384-dim text vector on CPU.</p>
+                  </div>
+                  <div class="bg-zinc-950 p-5">
+                    <div class="mono text-[11px] text-zinc-500">12 — 198 ms</div>
+                    <div class="mt-2 text-[14px] font-semibold text-white">Two ANN lanes</div>
+                    <p class="mt-2 text-[12.5px] leading-relaxed text-zinc-400">Dense ANN across all docs + identifier-filtered ANN in parallel.</p>
+                  </div>
+                  <div class="bg-zinc-950 p-5">
+                    <div class="mono text-[11px] text-zinc-500">198 — 610 ms</div>
+                    <div class="mt-2 text-[14px] font-semibold text-white">RRF + slot fills</div>
+                    <p class="mt-2 text-[12.5px] leading-relaxed text-zinc-400">Reciprocal rank fusion, then three filter-scoped retrievals for manual, incident, part.</p>
+                  </div>
+                  <div class="bg-zinc-950 p-5">
+                    <div class="mono text-[11px] text-zinc-500">610 — 843 ms</div>
+                    <div class="mt-2 text-[14px] font-semibold text-white">Compose + render</div>
+                    <p class="mt-2 text-[12.5px] leading-relaxed text-zinc-400">Template populates from retrieved rows. No LLM in this step.</p>
+                  </div>
+                </div>
+                <p class="mt-4 text-[12px] text-zinc-500">
+                  <span class="mono text-zinc-300">9 vector ops</span> per user query, zero network calls, every step reproducible.
+                </p>
+              </div>
             </div>
           </details>
 
@@ -695,6 +747,20 @@ score(d) = Σ 1 / (60 + rank_i(d))
                 <span class="plus text-zinc-500 transition group-open:rotate-45">+</span>
               </summary>
               <div class="mt-3 max-w-prose text-[14px] leading-relaxed text-zinc-400">Yes. Drop PDFs into <span class="mono text-zinc-200">data/raw/manuals/</span>, images into <span class="mono text-zinc-200">data/raw/images/</span>, CSVs for incidents/parts/error codes into <span class="mono text-zinc-200">data/raw/</span>. Re-run the bulk-ingest script.</div>
+            </details>
+            <details class="group py-4">
+              <summary class="flex cursor-pointer items-center justify-between text-[15px] font-medium text-white">
+                <span>How large a corpus does this handle on a laptop?</span>
+                <span class="plus text-zinc-500 transition group-open:rotate-45">+</span>
+              </summary>
+              <div class="mt-3 max-w-prose text-[14px] leading-relaxed text-zinc-400">The benchmarked corpus is small (3 PDF manuals, 30 incidents, 25 parts, 13 error codes, 6 schematics, 5 voice clips) because it's built for a hackathon. Actian VectorAI DB itself scales to hundreds of millions of vectors per collection; the bottleneck on a 16 GB laptop is embedding throughput, not retrieval. A ten-thousand-page manual corpus is well inside the envelope. Beyond that, move embedding to a GPU box and leave retrieval on the laptop.</div>
+            </details>
+            <details class="group py-4">
+              <summary class="flex cursor-pointer items-center justify-between text-[15px] font-medium text-white">
+                <span>Does it need a GPU?</span>
+                <span class="plus text-zinc-500 transition group-open:rotate-45">+</span>
+              </summary>
+              <div class="mt-3 max-w-prose text-[14px] leading-relaxed text-zinc-400">No. bge-small, CLIP-ViT-B-32, and whisper tiny.en all run acceptably on CPU — the 843ms p50 number is from a 16 GB laptop, CPU-only, WSL2. A GPU helps during bulk ingest but is unnecessary for query-time retrieval.</div>
             </details>
             <details class="group py-4">
               <summary class="flex cursor-pointer items-center justify-between text-[15px] font-medium text-white">
