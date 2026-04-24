@@ -148,11 +148,11 @@ docker compose --profile full up --build
 
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+python3.11 -m venv .venv && source .venv/bin/activate   # or python3.12
 pip install -r requirements.txt
 ```
 
-`requirements.txt` already includes `actian-vectorai==0.1.0b2`, so no extra wheel install step is required.
+Use Python 3.11 or 3.12. `requirements.txt` already includes `actian-vectorai==0.1.0b2`, so no extra wheel install step is required.
 
 ### 3. Seed data
 
@@ -198,7 +198,7 @@ npm run dev
 
 Open http://localhost:3000.
 
-The backend allows local browser requests from `http://localhost:3000` and `http://127.0.0.1:3000` by default. Override with `CORS_ORIGINS` if you need a different frontend origin.
+The frontend targets `http://localhost:8000` by default for local development. For split deployments, set `NEXT_PUBLIC_API_URL` explicitly. The backend allows local browser requests from `http://localhost:3000` and `http://127.0.0.1:3000` by default. Override with `CORS_ORIGINS` if you need a different frontend origin.
 
 ### 6. Verify offline
 
