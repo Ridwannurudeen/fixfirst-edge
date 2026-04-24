@@ -16,6 +16,33 @@ say()  { printf "\033[36m[ffe]\033[0m %s\n" "$*"; }
 err()  { printf "\033[31m[err]\033[0m %s\n" "$*" >&2; }
 ok()   { printf "\033[32m[ok]\033[0m  %s\n" "$*"; }
 
+pick_python() {
+  for candidate in python3.11 python3.12 python3; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      version="$("$candidate" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+      case "$version" in
+        3.11|3.12)
+          printf "%s" "$candidate"
+          return 0
+          ;;
+      esac
+    fi
+  done
+  return 1
+}
+
+ensure_venv_target() {
+  if [ -n "${FFE_VENV:-}" ]; then
+    printf "%s" "$FFE_VENV"
+    return 0
+  fi
+  if [ -f "$HOME/ffe-venv/bin/activate" ]; then
+    printf "%s" "$HOME/ffe-venv"
+    return 0
+  fi
+  printf "%s" "$ROOT/.venv"
+}
+
 # ── 1. Database ──────────────────────────────────────────────────────────
 say "checking database..."
 if ! command -v docker >/dev/null 2>&1; then
@@ -40,12 +67,27 @@ else
 fi
 
 # ── 2. Python venv ───────────────────────────────────────────────────────
+VENV="$(ensure_venv_target)"
 if [ ! -f "$VENV/bin/activate" ]; then
-  err "python venv not found at $VENV — set FFE_VENV or create it."
-  exit 1
+  say "creating python venv at $VENV..."
+  if ! PYTHON_BIN="$(pick_python)"; then
+    err "Python 3.11 or 3.12 is required. Install one of them or set FFE_VENV to a compatible virtualenv."
+    exit 1
+  fi
+  "$PYTHON_BIN" -m venv "$VENV"
+  ok "venv created with $PYTHON_BIN"
 fi
 # shellcheck source=/dev/null
 source "$VENV/bin/activate"
+
+if ! python -c "import fastapi" >/dev/null 2>&1; then
+  say "installing backend dependencies into $VENV..."
+  pip install -r "$ROOT/backend/requirements.txt" >"$LOGDIR/pip-install.log" 2>&1 || {
+    err "dependency install failed. check $LOGDIR/pip-install.log"
+    exit 1
+  }
+  ok "backend dependencies installed"
+fi
 
 # ── 3. Backend ───────────────────────────────────────────────────────────
 if curl -sfm 2 http://127.0.0.1:8000/api/health >/dev/null 2>&1; then
