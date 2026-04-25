@@ -92,7 +92,10 @@ Fallback branded cover asset in repo: `landing/cover.svg` (export to PNG if the 
 
 ## Team
 
-Ridwannurudeen — builder / maintainer. Additional teammates should be listed in the DoraHacks team form.
+- [Ridwannurudeen](https://github.com/Ridwannurudeen) — owner, primary builder (backend, Actian integration, frontend, deploy)
+- [dolepee](https://github.com/dolepee) — hybrid retrieval, submission readiness, landing deployment, audit fixes
+- [dmetagame](https://github.com/dmetagame) — audit revision contributor
+- Zuliat Nurudeen — marketing strategist
 
 ## What we built during the hackathon
 
