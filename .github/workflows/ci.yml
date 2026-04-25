@@ -38,4 +38,6 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
+        env:
+          PYTHONPATH: .
         run: pytest -q
