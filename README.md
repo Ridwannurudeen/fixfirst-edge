@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/Ridwannurudeen/fixfirst-edge/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Ridwannurudeen/fixfirst-edge/actions/workflows/ci.yml)
 
+**Demo:** [2-minute walkthrough on YouTube](https://youtu.be/eKGRRkdDurA) · **Live landing page:** [edge.gudman.xyz](https://edge.gudman.xyz)
+
 **Offline multimodal maintenance copilot for industrial technicians.**
 
 Search by photo of a broken part, error code, voice note, manual snippet, or past incident. Get back evidence-backed fix recommendations — the relevant manual section, the closest historical incident, and the likely replacement part. Everything runs **locally, with no internet**, on a laptop.
