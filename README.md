@@ -225,7 +225,7 @@ The Next.js UI is built around a single unified entry point — `POST /api/diagn
 | GET | `/api/health` | `{status, online, db, collection_ready}` |
 | POST | `/api/ingest/manual` | multipart: PDF + machine_type + model_no |
 | POST | `/api/ingest/incident` | JSON row → auto-detects incident vs. error_code |
-| POST | `/api/ingest/image` | multipart: image + machine_type + optional fault_code/severity |
+| POST | `/api/ingest/image` | multipart: image + machine_type + optional model_no/fault_code/severity/part_no |
 | POST | `/api/ingest/voice` | multipart: WAV + machine_type |
 | POST | `/api/ingest/part` | JSON row |
 | POST | `/api/search/text` | JSON: `{query, filters?}` → RRF hybrid (dense ANN + identifier-filtered ANN) |
