@@ -117,6 +117,55 @@
       .card-warm {
         background: linear-gradient(180deg, rgba(24,22,20,0.55), rgba(10,9,8,0.85));
       }
+
+      /* ---------- partial light mode (OS preference) ---------- */
+      @media (prefers-color-scheme: light) {
+        :root { --ink: #fafaf9; --ink-2: #f4f4f3; }
+        html, body { background: var(--ink); color: #18181b; }
+        body {
+          background:
+            radial-gradient(ellipse 1100px 520px at 50% -60px, rgba(212, 165, 116, 0.10), transparent 60%),
+            radial-gradient(ellipse 900px 400px at 50% 100%, rgba(212, 165, 116, 0.05), transparent 60%),
+            var(--ink);
+        }
+        ::selection { background: var(--accent-soft); color: #18181b; }
+        .hairline {
+          background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+        }
+        .hero-glow {
+          background:
+            radial-gradient(circle at 15% 28%, rgba(212, 165, 116, 0.16), transparent 42%),
+            radial-gradient(circle at 88% 62%, rgba(212, 165, 116, 0.08), transparent 48%);
+        }
+        .tab-active { color: #18181b !important; background: #fff !important; }
+        .card-warm {
+          background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(244,244,243,0.95)) !important;
+        }
+        .divider { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.10), transparent); }
+
+        /* Tailwind dark surfaces -> light surfaces */
+        .bg-zinc-950, .bg-zinc-950\/40, .bg-zinc-950\/85, .bg-zinc-950\/90 { background-color: #fafaf9 !important; }
+        .bg-zinc-900, .bg-zinc-900\/60 { background-color: #f4f4f3 !important; }
+        .bg-zinc-800 { background-color: #e7e5e4 !important; }
+        .bg-black, .bg-black\/40, .bg-black\/60 { background-color: rgba(244,244,243,0.6) !important; }
+        .bg-white { background-color: #18181b !important; color: #fafaf9 !important; }
+
+        /* Tailwind dark text -> dark-on-light text */
+        .text-white, .text-zinc-100, .text-zinc-200 { color: #18181b !important; }
+        .text-zinc-300, .text-zinc-400 { color: #3f3f46 !important; }
+        .text-zinc-500 { color: #52525b !important; }
+        .text-zinc-600, .text-zinc-700 { color: #71717a !important; }
+
+        /* Tailwind dark borders -> light borders */
+        .border-zinc-800, .border-zinc-900 { border-color: #e4e4e7 !important; }
+
+        /* Inverted button (white-on-dark in dark mode) flips to dark-on-light */
+        .bg-white.text-black:hover { background-color: #27272a !important; }
+
+        /* Shadows softer */
+        .shadow-2xl { box-shadow: 0 12px 32px -12px rgba(0,0,0,0.18) !important; }
+      }
     </style>
   </head>
   <body class="antialiased">
