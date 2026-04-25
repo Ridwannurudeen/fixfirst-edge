@@ -8,7 +8,7 @@
 
 Search by photo of a broken part, error code, voice note, manual snippet, or past incident. Get back evidence-backed fix recommendations — the relevant manual section, the closest historical incident, and the likely replacement part. Everything runs **locally, with no internet**, on a laptop.
 
-> **For the Actian VectorAI DB Build Challenge.** FixFirst Edge uses all three of the Actian features the rubric asks for: **named vectors** for multimodal retrieval (text + image + audio in one collection), **filtered search** with indexed keyword fields, and **hybrid RRF fusion** across a dense ANN lane and an Actian-native identifier-filtered ANN lane. It runs **100% offline** on a 16 GB laptop, CPU-only, with no outbound network calls in the diagnose path. CI builds and runs the backend test suite on **x86_64 and ARM64 Linux** on every commit. End-to-end p50 **~850 ms**, p95 **~1100 ms** (see [Benchmark](#benchmark)).
+> **For the Actian VectorAI DB Build Challenge.** FixFirst Edge uses all three of the Actian features the rubric asks for: **named vectors** for multimodal retrieval (text + image + audio in one collection), **filtered search** with indexed keyword fields, and **hybrid RRF fusion** across a dense ANN lane and an Actian-native identifier-filtered ANN lane. It runs **100% offline** on a 16 GB laptop, CPU-only (the ~1 GB model footprint also fits an 8 GB machine; not yet measured at that floor), with no outbound network calls in the diagnose path. CI builds and runs the backend test suite on **x86_64 and ARM64 Linux** on every commit. End-to-end p50 **~850 ms**, p95 **~1100 ms** (see [Benchmark](#benchmark)).
 
 ---
 

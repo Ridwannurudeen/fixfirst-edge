@@ -42,7 +42,7 @@ Seven things that separate this entry from a typical hackathon submission. All v
 
 Industrial downtime costs an estimated $50B per year. When a machine faults, the technician on the floor has minutes, not hours, to diagnose the problem. The information needed — equipment manuals, historical incidents, parts catalogs, even colleagues' voice notes — exists, but it is scattered across PDFs, spreadsheets, and shared drives, and the plant floor rarely has reliable internet.
 
-FixFirst Edge is an offline multimodal maintenance copilot that fits on a laptop. A technician can search by error code, symptom text, a photo of the damaged part, or a spoken voice note. The system retrieves the most relevant evidence across all of these modalities in a single query and returns a templated, fully traceable fix recommendation — the relevant manual section, the closest prior incident, and the likely replacement part.
+FixFirst Edge is an offline multimodal maintenance copilot that fits on a 16 GB laptop (model footprint also fits 8 GB; not yet measured at that floor). A technician can search by error code, symptom text, a photo of the damaged part, or a spoken voice note. The system retrieves the most relevant evidence across all of these modalities in a single query and returns a templated, fully traceable fix recommendation — the relevant manual section, the closest prior incident, and the likely replacement part.
 
 Every answer is auditable. No LLM is used in the diagnostic response; all recommendations are templated from retrieved rows in the vector store, each traceable back to a specific page of a specific manual or a specific prior incident.
 
