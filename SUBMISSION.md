@@ -99,7 +99,7 @@ Fallback branded cover asset in repo: `landing/cover.svg` (export to PNG if the 
 
 ## What we built during the hackathon
 
-- Full FastAPI backend with 11 endpoints across ingest / search / diagnose
+- Full FastAPI backend with 12 endpoints across ingest / search / diagnose
 - Three-vector Actian collection with `init_collection`, `upsert`, `search_text`, `search_image`, `search_audio`, `search_hybrid` (RRF), `health`
 - Multimodal pipelines: text (bge-small), image (CLIP), audio (whisper tiny.en), PDF chunker, CSV loader
 - Diagnose service that chains three filtered retrievals (manual → incident → part) and builds a templated, evidence-backed answer
