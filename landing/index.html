@@ -344,7 +344,6 @@
         <div class="mt-10 inline-flex rounded-lg border border-zinc-800 bg-zinc-950 p-1">
           <button class="see-tab tab-active rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-100 transition" data-see="flow">Flow</button>
           <button class="see-tab rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-200 transition" data-see="sample">Sample response</button>
-          <button class="see-tab rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-200 transition" data-see="video">Video</button>
         </div>
 
         <!-- FLOW -->
@@ -446,26 +445,6 @@
           </div>
         </div>
 
-        <!-- VIDEO -->
-        <div class="see-panel mt-10 hidden" data-see="video">
-          <div class="overflow-hidden rounded-xl border border-zinc-800 bg-black">
-            <div id="video-slot" class="relative aspect-video w-full">
-              <iframe
-                class="h-full w-full bg-black"
-                src="https://www.youtube-nocookie.com/embed/eKGRRkdDurA"
-                title="FixFirst Edge demo walkthrough"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-              ></iframe>
-            </div>
-          </div>
-          <div class="mt-5 grid grid-cols-2 gap-3 text-[12px] text-zinc-500 md:grid-cols-4">
-            <div class="flex items-start gap-2"><span class="mono text-zinc-600">00:00</span><span>WiFi disabled · network panel shows zero outbound</span></div>
-            <div class="flex items-start gap-2"><span class="mono text-zinc-600">00:18</span><span>Error code <span class="mono text-zinc-300">E04</span> · 841ms result</span></div>
-            <div class="flex items-start gap-2"><span class="mono text-zinc-600">00:52</span><span>Photo of a sheared bearing · visual match</span></div>
-            <div class="flex items-start gap-2"><span class="mono text-zinc-600">01:34</span><span>Voice note recorded · transcribed · answered</span></div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -1129,18 +1108,6 @@ score(d) = Σ 1 / (60 + rank_i(d))
             });
             panels.forEach(p => p.classList.toggle('hidden', p.dataset.see !== key));
           });
-        });
-      })();
-
-      // Hide video placeholder once the real video starts playing.
-      (function () {
-        const v = document.querySelector("#video-slot video");
-        const ph = document.getElementById("video-placeholder");
-        if (!v || !ph) return;
-        const hide = () => { ph.style.opacity = "0"; ph.style.pointerEvents = "none"; };
-        v.addEventListener("play", hide);
-        v.addEventListener("loadeddata", () => {
-          if (v.readyState >= 2 && v.videoWidth > 0) hide();
         });
       })();
 
