@@ -342,12 +342,61 @@
         </div>
 
         <div class="mt-10 inline-flex rounded-lg border border-zinc-800 bg-zinc-950 p-1">
-          <button class="see-tab tab-active rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-100 transition" data-see="flow">Flow</button>
+          <button class="see-tab tab-active rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-100 transition" data-see="start">Get started</button>
+          <button class="see-tab rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-200 transition" data-see="flow">Flow</button>
           <button class="see-tab rounded-md px-4 py-1.5 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-200 transition" data-see="sample">Sample response</button>
         </div>
 
+        <!-- GET STARTED -->
+        <div class="see-panel mt-10" data-see="start">
+          <div class="grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-3">
+            <div class="card-warm p-6">
+              <div class="flex items-center gap-2">
+                <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border accent-border text-[10px] font-semibold accent">1</span>
+                <span class="mono text-[11px] text-zinc-500">0 install · 2 minutes</span>
+              </div>
+              <div class="mt-4 text-[16px] font-semibold text-white">Watch the demo</div>
+              <p class="mt-2 text-[13.5px] leading-relaxed text-zinc-400">
+                See the full offline pipeline answer a real fault code, classify a photo of a damaged part, and transcribe a voice note — all on a laptop with WiFi off.
+              </p>
+              <a href="https://youtu.be/eKGRRkdDurA" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-1.5 rounded border accent-border bg-black/40 px-3 py-2 mono text-[11.5px] text-zinc-100 hover:bg-black/60 transition">
+                youtu.be/eKGRRkdDurA →
+              </a>
+            </div>
+            <div class="card-warm p-6">
+              <div class="flex items-center gap-2">
+                <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border accent-border text-[10px] font-semibold accent">2</span>
+                <span class="mono text-[11px] text-zinc-500">0 install · in your browser</span>
+              </div>
+              <div class="mt-4 text-[16px] font-semibold text-white">Try the live retrieval</div>
+              <p class="mt-2 text-[13.5px] leading-relaxed text-zinc-400">
+                Type a query against the real demo corpus right here on this page. The widget runs in your browser and reports the actual measured latency — no install, no signup.
+              </p>
+              <a href="#try" class="mt-4 inline-flex items-center gap-1.5 rounded border accent-border bg-black/40 px-3 py-2 mono text-[11.5px] text-zinc-100 hover:bg-black/60 transition">
+                scroll to the widget ↓
+              </a>
+            </div>
+            <div class="card-warm p-6">
+              <div class="flex items-center gap-2">
+                <span class="mono inline-flex h-6 w-6 items-center justify-center rounded-full border accent-border text-[10px] font-semibold accent">3</span>
+                <span class="mono text-[11px] text-zinc-500">~5 minutes · one command</span>
+              </div>
+              <div class="mt-4 text-[16px] font-semibold text-white">Run it locally</div>
+              <p class="mt-2 text-[13.5px] leading-relaxed text-zinc-400">
+                Boot the full stack — Actian + backend + frontend — with a single docker compose. No Python venv, no node install, no setup beyond Docker on your machine.
+              </p>
+              <div class="mt-4 rounded border border-zinc-800 bg-black/40 p-3 mono text-[11.5px] text-zinc-100">
+                docker compose --profile full up
+              </div>
+              <a href="https://github.com/Ridwannurudeen/fixfirst-edge#quickstart" target="_blank" rel="noopener" class="mono mt-3 inline-block text-[11px] text-zinc-500 hover:text-zinc-200 transition">
+                full quickstart on GitHub →
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- FLOW -->
-        <div class="see-panel mt-10" data-see="flow">
+        <div class="see-panel mt-10 hidden" data-see="flow">
           <div class="grid gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800 md:grid-cols-3">
             <div class="card-warm p-6">
               <div class="flex items-center gap-2">
