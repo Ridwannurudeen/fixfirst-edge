@@ -35,7 +35,7 @@ Seven things that separate this entry from a typical hackathon submission. All v
 3. **Full multimodal pipeline.** bge-small (text, 384d), CLIP-ViT-B-32 (image, 512d), faster-whisper tiny.en (audio → text, 384d) — all embedded locally on CPU. Most entries will be text-only.
 4. **Real-world positioning.** Offline industrial maintenance is a $50B downtime problem, not another LLM-wrapper. The category is wide open — no incumbent owns the offline / air-gapped wedge we address.
 5. **Production-grade landing page at [edge.gudman.xyz](https://edge.gudman.xyz).** Benchmarked directly against Augury, MaintainX, UpKeep, Fiix, Limble, Dozuki, Tulip, and Aquant. Includes an in-browser interactive retrieval widget against the real demo corpus.
-6. **Production sensibility.** 19 backend tests passing, MIT-licensed, public repo, deployed domain, one-command `./start.sh` + `./stop.sh` lifecycle, `docker compose` full-stack deployment, regenerable demo corpus (3 PDFs, 6 schematics, 5 voice notes, 30 incidents, 25 parts, 13 error codes).
+6. **Production sensibility.** 21 backend tests passing, MIT-licensed, public repo, deployed domain, one-command `./start.sh` + `./stop.sh` lifecycle, `docker compose` full-stack deployment, regenerable demo corpus (3 PDFs, 6 schematics, 5 voice notes, 30 incidents, 25 parts, 13 error codes). Continuous integration runs the suite on **x86_64 and ARM64 Linux** on every commit (GitHub Actions, free public-repo runners) — portability is verified, not asserted.
 7. **Interactive demo on the landing page.** Visitors can type a query and see real browser-measured retrieval latency against the demo corpus — no install required to verify the core claim.
 
 ## Full description
